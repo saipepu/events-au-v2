@@ -2,8 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import swaggerUI from 'swagger-ui-express';
-import swaggerJsDoc from 'swagger-jsdoc';
 
 async function bootstrap() {
 
@@ -33,7 +31,7 @@ async function bootstrap() {
     )
     .build()
 
-  const CSS_URL ="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+  const CSS_URL ="https://cdn.jsdelivr.net/npm/swagger-ui-express@4.6.3/index.min.js";
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document,
     {
@@ -45,6 +43,7 @@ async function bootstrap() {
     }
   );
 
+  // app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(document));
   console.log('Initiating server on port 3000 . . .')
 
   await app.listen(3000);
