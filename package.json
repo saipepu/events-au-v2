@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "v20.14.0"
+  },
   "scripts": {
     "dev": "nest build && nest start",
     "build": "nest build",
