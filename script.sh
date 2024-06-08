@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Update
-
 # URL of the JSON content
 URL="http://localhost:3000/swagger-json"
 

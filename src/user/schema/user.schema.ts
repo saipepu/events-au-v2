@@ -16,7 +16,7 @@ export class User extends Document {
   @Prop({ required: [true, "Firebase user id is required!"], unique: [true, "Duplicate firebase user id."]})
   fId: string; // fId -> firebaseId
 
-  @ApiProperty({ example: 'John', description: 'First Name' })
+  @ApiProperty({ example: 'Updated', description: 'Updated' })
   @Prop({ required: [true, "First name is required!"] })
   firstName: string;
 

@@ -12,7 +12,7 @@ import { EventService } from 'src/event/event.service';
 import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('user')
-@ApiExtraModels(User, CreateEventDto)
+@ApiExtraModels(User, CreateEventDto, CreateParticipantDto)
 @Controller('')
 export class UserController {
   constructor(
