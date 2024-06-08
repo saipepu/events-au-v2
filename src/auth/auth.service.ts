@@ -92,7 +92,7 @@ export class AuthService {
     try {
       
       const token = this.jwtService.sign({ id: user._id })
-      return { success: true, message: { token } }
+      return { success: true, message: { token, user } }
     } catch(err) {
       return { success: false, error: err.errmsg ? err.errmsg : err.message }
     }
