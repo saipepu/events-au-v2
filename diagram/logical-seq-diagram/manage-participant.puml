@@ -1,0 +1,32 @@
+@startuml Manage Participant
+
+title Manage Participant
+participant Client as Cl
+participant Controller as C
+boundary Middleware as Mdw
+participant Service as S
+database Database as DB
+
+group Approved/Reject Participant
+    Cl -> C : approve/reject participants
+    C -> Mdw: isOrg Auth
+    Mdw -> S: organizerService.manageParticipant
+    loop update each participant
+        Mdw -> S: participantService.updateStatus
+        S -> DB: find <font color="blue">participant <font color="black">by Id and Update Status
+        DB --> S: updated result (true/false)
+    end
+    S --> C: updated result list
+    C --> Cl: updated result list
+end
+
+group Update Basic Info
+    Cl -> C : Event Info
+    C -> Mdw: isOrg Auth
+    Mdw -> S: eventService.update
+    S -> DB: find <font color="blue">event <font color="black">by Id and Update
+end
+
+
+
+@endstartuml

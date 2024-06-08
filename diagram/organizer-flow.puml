@@ -1,0 +1,44 @@
+@startuml Organizer
+title Organizer Functional Sequence Diagram
+actor Organizer as Org
+actor Admin as Adm
+actor Participant as P
+participant Backend as BE
+database Database as DB
+
+group Update Event Basic Info
+    Org -> BE: Update Event
+    BE -> DB: Update Event
+    DB --> BE: Event Updated
+    BE --> Org: Event Updated
+    BE --> Adm: Notify Admin
+    BE --> P: Notify Participant
+end
+
+group Approve/Reject Participant
+    Org -> BE: Approve/Reject Event
+    BE -> DB: <font color=blue><b>Update Event Participants
+    DB --> BE: Event Participants Updated
+    BE --> Org: Participant Approved/Rejected
+    BE --> P: Notify Participant
+end
+
+group Update Event Status
+    Org -> BE: Approve/Reject Event
+    BE -> DB: Update Event Status
+    DB --> BE: Event Status Updated
+    BE --> Org: Event Status Updated
+    BE --> Adm: Notify Admin
+    BE --> P: Notify Participant
+end
+
+group Update Event Unit
+    Org -> BE: Approve/Reject Event
+    BE -> DB: Update Event Unit
+    DB --> BE: Event Unit Updated
+    BE --> Org: Event Unit Updated
+    BE --> Adm: Notify Admin
+    BE --> P: Notify Participant
+end
+
+@enduml

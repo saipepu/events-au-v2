@@ -1,0 +1,33 @@
+@startuml User
+title User Functional Sequence Diagram
+actor Organizer as Org
+actor Admin as Adm
+actor User as User
+participant Backend as BE
+database Database as DB
+
+group Create an Event
+    User -> BE: Create Event
+    BE -> DB: Save Event
+    DB --> BE: Event Saved
+    BE --> User: Event Created
+    BE --> Adm: Notify Admin
+end
+
+group Join an Event
+    User -> BE: Join Event
+    BE -> DB: Save User Event
+    DB --> BE: User Event Saved
+    BE --> User: Event Joined
+    BE --> Org: Notify Organizer
+end
+
+' group Join a Unit
+'     User -> BE: Join Unit
+'     BE -> DB: Update User Unit
+'     DB --> BE: User Unit Updated
+'     BE --> User: Unit Joined
+'     BE --> Org: Notify Organizer
+' end
+
+@enduml

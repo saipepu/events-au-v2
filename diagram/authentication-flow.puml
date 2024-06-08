@@ -1,0 +1,45 @@
+@startuml Auth
+title Authentication Flow Sequence Diagram
+participant Frontend as FE
+participant GoogleAuth as G
+participant Backend as BE
+database Database as DB
+
+group Login
+    FE -> G: Login
+    G --> FE: fId
+    FE -> BE: login with fId
+    BE -> DB: check user
+    DB --> BE: user info
+    BE --> FE: token
+end
+
+group SignUp
+    FE -> G: SignUp
+    G --> FE: fId
+    FE -> BE: signup with fId
+    BE -> DB: create user
+    DB --> BE: user info
+    BE --> FE: success or failure noti
+    group Login
+    end
+end
+
+@enduml
+
+' @startuml doc
+' Bob ->x Alice
+' Bob -> Alice
+' Bob ->> Alice
+' Bob -\ Alice
+' Bob \\- Alice
+' Bob //-- Alice
+
+' Bob ->o Alice
+' Bob o\\-- Alice
+
+' Bob <-> Alice
+' Bob <->o Alice
+' Bob -[#red]> Alice : hello
+' Alice -[#0000FF]->Bob : ok
+' @enduml
