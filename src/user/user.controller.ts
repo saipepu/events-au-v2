@@ -75,15 +75,16 @@ export class UserController {
 
   }
 
-  @Post('user/join/unit/:id')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth('bearer-token')
-  @ApiResponse({ status: 200, description: 'User joined unit', schema: resJoinUnitDto })
-  async joinUnit(
-    @Param('id')
-    unitId: string,
-    @Req() req
-  ) {
-    return this.userService.joinUnit(unitId, req.user)
-  }
+  // Let user join new Unit
+  // @Post('user/join/unit/:id')
+  // @UseGuards(AuthGuard())
+  // @ApiBearerAuth('bearer-token')
+  // @ApiResponse({ status: 200, description: 'User joined unit', schema: resJoinUnitDto })
+  // async joinUnit(
+  //   @Param('id')
+  //   unitId: string,
+  //   @Req() req
+  // ) {
+  //   return this.userService.joinUnit(unitId, req.user)
+  // }
 }

@@ -1,0 +1,17 @@
+@startuml Participant
+title Participant Functional Sequence Diagram
+actor Organizer as Org
+actor Admin as Adm
+actor Participant as P
+participant Backend as BE
+database Database as DB
+
+group Leave an Event
+    P -> BE: Leave Event
+    BE -> DB: <font color="blue"><b>Leave Event
+    DB --> BE: Event Left
+    BE --> P: Event Left
+    BE --> Org: Notify Organizer
+end
+
+@enduml
