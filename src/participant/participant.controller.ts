@@ -4,9 +4,11 @@ import { Query as ExpressQuery } from 'express-serve-static-core'
 import { AuthGuard } from '@nestjs/passport';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { Participant } from './schema/participant.schema';
+import { CreateParticipantDto } from './dto/create-participant.dto';
+import { UpdateParticipantStatusDto } from './dto/update-status-participant.dto';
 
 @ApiTags('participant')
-@ApiExtraModels(Participant)
+@ApiExtraModels(Participant, CreateParticipantDto, UpdateParticipantStatusDto)
 @Controller('')
 export class ParticipantController {
   constructor(
