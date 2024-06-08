@@ -14,7 +14,7 @@ import { Organizer } from './schema/organizer.schema';
 import { resGetAllOrganizerDto, resGetOrganizerByIdDto } from './dto/organizerResponse.dto';
 
 @ApiTags('organizer')
-@ApiExtraModels(Organizer)
+@ApiExtraModels(Organizer, UpdateParticipantStatusDto)
 @Controller('')
 export class OrganizerController {
   constructor(

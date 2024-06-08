@@ -31,15 +31,13 @@ async function bootstrap() {
     )
     .build()
 
-  const CSS_URL ="https://cdn.jsdelivr.net/npm/swagger-ui-express@4.6.3/index.min.js";
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document,
     {
       jsonDocumentUrl: 'swagger-json',
       swaggerOptions: {
         // tagsSorter: 'alpha',
-      },
-      customCssUrl: CSS_URL,
+      }
     }
   );
 
