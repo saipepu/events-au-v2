@@ -23,7 +23,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "heroku-prebuild": "npm install -f",
-    "heroku-postbuild": "npm run prod"
+    "heroku-postbuild": "npm run start:prod"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
