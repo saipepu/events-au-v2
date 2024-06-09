@@ -9,7 +9,7 @@ import { EventService } from 'src/event/event.service';
 import { UpdateEventDto } from 'src/event/dto/update-event.dto';
 import { UpdateEventStatusDto } from 'src/event/dto/update-event-status.dto';
 import { updateEventUnitDto } from 'src/event-unit/dto/update-event-unit.dto';
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { Organizer } from './schema/organizer.schema';
 import { resGetAllOrganizerDto, resGetOrganizerByIdDto } from './dto/organizerResponse.dto';
 
@@ -57,6 +57,7 @@ export class OrganizerController {
 
   @Put('org/event/:eventId/status')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
   async updateStatus(
     @Param('eventId')
     eventId: string,
