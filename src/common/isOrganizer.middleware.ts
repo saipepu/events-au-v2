@@ -15,8 +15,8 @@ export class isOrganizer implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
 
-    
-    const token = req.headers.authorization.split(' ')[1]
+    console.log(req.headers)
+    const token = req.headers.authorization?.split(' ')[1]
     const decode: any = jwt.decode(token)
     const eventId = req.params.eventId
     const userId = decode.id
