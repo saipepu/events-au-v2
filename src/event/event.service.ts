@@ -12,6 +12,7 @@ import { OrganizerService } from 'src/organizer/organizer.service';
 import { EventUnitService } from 'src/event-unit/event-unit.service';
 import { UnitService } from 'src/unit/unit.service';
 import { UserService } from 'src/user/user.service';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Injectable()
 export class EventService {
@@ -21,7 +22,8 @@ export class EventService {
     private organizerService: OrganizerService,
     private eventUnitService: EventUnitService,
     private unitService: UnitService,
-    private userService: UserService
+    private userService: UserService,
+    private mailService: MailService
   ) {}
 
   // find all events
@@ -136,6 +138,12 @@ export class EventService {
         new: true,
         runValidators: true,
       })
+
+      // this.mailService.sendRoleChangeNotification(
+      //   "saipepu.mdy257@gmail.com",
+      //   "TestMail",
+      //   "event status changed"
+      // )
 
       return { success: true, message: res }
 

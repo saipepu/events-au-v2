@@ -17,6 +17,7 @@ import { ParticipantModule } from 'src/participant/participant.module';
 import { EventUnitModule } from 'src/event-unit/event-unit.module';
 import { UnitModule } from 'src/unit/unit.module';
 import { UserModule } from 'src/user/user.module';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { UserModule } from 'src/user/user.module';
     forwardRef(() => UserModule),
   ],
   controllers: [EventController],
-  providers: [EventService, OrganizerService, ParticipantService, EventUnitService],
+  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService],
   exports: [EventService]
 })
 export class EventModule {}

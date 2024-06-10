@@ -2,7 +2,7 @@ import { Controller, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestj
 import { ParticipantService } from './participant.service';
 import { Query as ExpressQuery } from 'express-serve-static-core'
 import { AuthGuard } from '@nestjs/passport';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { Participant } from './schema/participant.schema';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantStatusDto } from './dto/update-status-participant.dto';
@@ -33,6 +33,7 @@ export class ParticipantController {
 
   @Put('participant/leave/event/:id')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
   async leaveEvent(
     @Param('id')
     eventId: string,
