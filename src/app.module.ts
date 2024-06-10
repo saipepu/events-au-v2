@@ -28,6 +28,9 @@ import { EventSchema } from './event/schema/event.schema';
 import { UserSchema } from './user/schema/user.schema';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MailModule } from './common/mail/mail.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -67,6 +70,28 @@ import { join } from 'path';
     UnitMemberModule,
     AdminModule,
     UnitAdminModule,
+    MailModule,
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'u6410381@au.edu',
+          pass: 'otlz jfui llbs dkih',
+        },
+      },
+      defaults: {
+        from: '"No Reply" <no-reply@example.com>',
+      },
+      template: {
+        dir: join(__dirname, '..', 'src', 'templates'), // <-- Update the path
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       exclude: ['/api*']
@@ -89,3 +114,4 @@ export class AppModule implements NestModule {
         .forRoutes({ path: '/admin/event/:eventId/*', method: RequestMethod.ALL })
   }
 }
+
