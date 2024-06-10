@@ -78,7 +78,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         secure: false,
         auth: {
           user: 'u6410381@au.edu',
-          pass: 'otlz jfui llbs dkih',
+          pass: process.env.SMTP_PWD,
         },
       },
       defaults: {
