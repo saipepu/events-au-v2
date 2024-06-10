@@ -41,7 +41,6 @@ async function bootstrap() {
     }
   );
 
-  // app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(document));
   console.log('Initiating server on port 3000 . . .')
 
   await app.listen(3000);

@@ -114,3 +114,4 @@ export class AppModule implements NestModule {
         .forRoutes({ path: '/admin/event/:eventId/*', method: RequestMethod.ALL })
   }
 }
+

@@ -46,6 +46,7 @@ export class OrganizerController {
 
   @Put('org/event/:eventId/basic-info')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
   async update(
     @Param('eventId')
     eventId: string,
@@ -74,6 +75,7 @@ export class OrganizerController {
 
   @Put('org/event/:eventId/participants')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
   async manageParticipant(
     @Param('eventId')
     eventId: string,
@@ -85,6 +87,7 @@ export class OrganizerController {
 
   @Put('org/event/:eventId/unit')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
   async manageEventUnit(
     @Param('eventId')
     eventId: string,
