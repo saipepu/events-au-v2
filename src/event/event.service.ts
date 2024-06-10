@@ -139,11 +139,11 @@ export class EventService {
         runValidators: true,
       })
 
-      this.mailService.sendRoleChangeNotification(
-        "saipepu.mdy257@gmail.com",
-        "TestMail",
-        "event status changed"
-      )
+      // this.mailService.sendRoleChangeNotification(
+      //   "saipepu.mdy257@gmail.com",
+      //   "TestMail",
+      //   "event status changed"
+      // )
 
       return { success: true, message: res }
 
