@@ -11,7 +11,7 @@ export class MailService {
       subject: 'Role Change Notification',
       template: './role-change', // The name of the template file (role-change.hbs)
       context: {
-        username: name,
+        username: name, // Events.AU
         newRole: newRole,
       },
     });

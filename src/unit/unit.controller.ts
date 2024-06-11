@@ -4,7 +4,7 @@ import { UnitService } from './unit.service';
 import { Query as ExpressQuery } from 'express-serve-static-core'
 import { AuthGuard } from '@nestjs/passport';
 import { EventUnitService } from 'src/event-unit/event-unit.service';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Unit } from './schema/unit.schema';
 import { resCreateUnitSuccessDto, resGetAllDto } from './dto/unitResponse.dto';
 
@@ -56,9 +56,10 @@ export class UnitController {
     return this.eventUnitService.findByEventId(eventId)
   }
 
+  @UseGuards(AuthGuard())
   @Post('unit')
   @ApiResponse({ status: 200, description: 'Unit created', schema: resCreateUnitSuccessDto })
-  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
   async create(
     @Body()
     body
