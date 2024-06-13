@@ -21,7 +21,10 @@ export class OrganizerService {
 
   async findAll(query: Query) {
   
+    console.log(query)
     const organizers = await this.organizerModel.find(query)
+                                .populate(["userId", "eventId"])
+                                .exec();
 
     return { success: true, message: organizers}
   }
@@ -32,7 +35,7 @@ export class OrganizerService {
       throw new NotAcceptableException({ success: false, error: "Organizer Id is invalid."})
     }
 
-    const organizer = await this.organizerModel.findById(id)
+    const organizer = await (await this.organizerModel.findById(id)).populate(["userId", "eventId"]);
 
     if(!organizer) {
       throw new NotFoundException({ success: false, error: "Organizer not found."})
