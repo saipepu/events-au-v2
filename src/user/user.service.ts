@@ -58,6 +58,19 @@ export class UserService {
     }
   }
 
+  async update(id: string, body: any) {
+      
+    try {
+      const user = await this.userModel.findByIdAndUpdate(id, body,{
+        new: true,
+        runValidators: true,
+      })
+      return { success: true, message: user }
+    } catch(err) {
+      throw new BadRequestException({ success: false, error: err })
+    }
+  }
+
   async joinEvent(eventId: string, user: User) {
 
     try {
