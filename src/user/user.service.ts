@@ -9,7 +9,7 @@ import { CreateParticipantDto } from 'src/participant/dto/create-participant.dto
 import { ParticipantService } from 'src/participant/participant.service';
 import { MailService } from 'src/common/mail/mail.service';
 import { OrganizerService } from 'src/organizer/organizer.service';
-import { EventService } from 'src/event/event.service';
+// import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class UserService {
@@ -20,7 +20,7 @@ export class UserService {
     private unitMemberService: UnitMemberService,
     private mailService: MailService,
     private organizerService: OrganizerService,
-    private eventService: EventService,
+    // private eventService: EventService,
   ) {}
 
   async findAll(query: Query) {
@@ -102,11 +102,11 @@ export class UserService {
           const organizerName = organizerUser.message.firstName;
 
           // Fetch event details to get the event name
-          const event = await this.eventService.findById(eventId);
-          const eventName = event.name;
+          // const event = await this.eventService.findById(eventId);
+          // const eventName = event.name;
 
           // Send email notification to the organizer
-          await this.mailService.sendEventJoinNotification(organizerEmail, eventName, user.email, organizerName);
+          await this.mailService.sendEventJoinNotification(organizerEmail, user.email, organizerName);
         }
       }
 
