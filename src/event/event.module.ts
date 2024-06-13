@@ -19,7 +19,6 @@ import { UnitModule } from 'src/unit/unit.module';
 import { UserModule } from 'src/user/user.module';
 import { MailService } from 'src/common/mail/mail.service';
 import { UnitAdminModule } from 'src/unit-admin/unit-admin.module'; 
-import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -34,7 +33,7 @@ import { UserService } from 'src/user/user.service';
     UnitAdminModule,
   ],
   controllers: [EventController],
-  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService, UserService],
+  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService],
   exports: [EventService]
 })
 export class EventModule {}
