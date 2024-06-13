@@ -7,9 +7,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Query } from 'express-serve-static-core'
 import { CreateParticipantDto } from 'src/participant/dto/create-participant.dto';
 import { ParticipantService } from 'src/participant/participant.service';
-import { MailService } from 'src/common/mail/mail.service';
-import { OrganizerService } from 'src/organizer/organizer.service';
-import { EventService } from 'src/event/event.service';
+// import { MailService } from 'src/common/mail/mail.service';
+// import { OrganizerService } from 'src/organizer/organizer.service';
+// import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class UserService {
@@ -18,9 +18,9 @@ export class UserService {
     private userModel: mongoose.Model<User>,
     private participantService: ParticipantService,
     private unitMemberService: UnitMemberService,
-    private mailService: MailService,
-    private organizerService: OrganizerService,
-    private eventService: EventService,
+    // private mailService: MailService,
+    // private organizerService: OrganizerService,
+    // private eventService: EventService,
   ) {}
 
   async findAll(query: Query) {
@@ -89,26 +89,26 @@ export class UserService {
         
       const participant = await this.participantService.create(participantDto);
 
-      // Find the organizer for the event
-      const organizersResponse = await this.organizerService.findAll({ eventId });
-      if (organizersResponse.success) {
-        const organizers = organizersResponse.message;
-        const organizer = organizers.find((org: any) => org.eventId.toString() === eventId);
+      // // Find the organizer for the event
+      // const organizersResponse = await this.organizerService.findAll({ eventId });
+      // if (organizersResponse.success) {
+      //   const organizers = organizersResponse.message;
+      //   const organizer = organizers.find((org: any) => org.eventId.toString() === eventId);
 
-        if (organizer) {
-          const organizerId = organizer.userId.toString();
-          const organizerUser = await this.findById(organizerId);
-          const organizerEmail = organizerUser.message.email;
-          const organizerName = organizerUser.message.firstName;
+      //   if (organizer) {
+      //     const organizerId = organizer.userId.toString();
+      //     const organizerUser = await this.findById(organizerId);
+      //     const organizerEmail = organizerUser.message.email;
+      //     const organizerName = organizerUser.message.firstName;
 
-          // Fetch event details to get the event name
-          const event = await this.eventService.findById(eventId);
-          const eventName = event.name;
+      //     // Fetch event details to get the event name
+      //     const event = await this.eventService.findById(eventId);
+      //     const eventName = event.name;
 
-          // Send email notification to the organizer
-          await this.mailService.sendEventJoinNotification(organizerEmail, eventName, user.email, organizerName);
-        }
-      }
+      //     // Send email notification to the organizer
+      //     await this.mailService.sendEventJoinNotification(organizerEmail, eventName, user.email, organizerName);
+        // }
+      // }
 
       return participant;
     } catch (err) {
