@@ -1,7 +1,7 @@
 import { resCreateEventSuccessDto, resGetAllDto, resGetByIdDto, resJoinEventDto, resJoinUnitDto } from './dto/userResponse.dto';
 import { UnitMemberService } from './../unit-member/unit-member.service';
 import { ParticipantService } from './../participant/participant.service';
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Query as QueryExpress } from 'express-serve-static-core'
 import { User } from './schema/user.schema';
@@ -10,9 +10,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { EventService } from 'src/event/event.service';
 import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('user')
-@ApiExtraModels(User, CreateEventDto, CreateParticipantDto)
+@ApiExtraModels(User, CreateEventDto, CreateParticipantDto, UpdateUserDto)
 @Controller('')
 export class UserController {
   constructor(
@@ -37,6 +38,19 @@ export class UserController {
     id: string
   ) {
     return this.userService.findById(id)
+  }
+
+  @Put('user/:id')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiResponse({ status: 200, description: 'User updated', schema: resGetByIdDto })
+  async update(
+    @Param('id')
+    id: string,
+    @Body()
+    body: UpdateUserDto
+  ) {
+    return this.userService.update(id, body)
   }
   
   @Get('users/unit/:id')
