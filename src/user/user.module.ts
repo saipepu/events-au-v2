@@ -12,6 +12,9 @@ import { UnitMemberModule } from 'src/unit-member/unit-member.module';
 import { UnitModule } from 'src/unit/unit.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { MailService } from 'src/common/mail/mail.service';
+import { EventService } from 'src/event/event.service';
+import { OrganizerService } from 'src/organizer/organizer.service';
 
 @Module({
   imports: [
@@ -37,7 +40,7 @@ import { ConfigService } from '@nestjs/config';
     })
   ],
   controllers: [UserController],
-  providers: [UserService, ParticipantService],
+  providers: [UserService, ParticipantService, MailService, EventService, OrganizerService],
   exports: [UserService]
 })
 export class UserModule {}
