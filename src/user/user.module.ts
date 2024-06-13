@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './schema/user.schema';
+import { User, UserSchema } from './schema/user.schema';
 import { ParticipantService } from 'src/participant/participant.service';
 import { ParticipantSchema } from 'src/participant/schema/participant.schema';
 import { EventModule } from 'src/event/event.module';
@@ -15,12 +15,31 @@ import { ConfigService } from '@nestjs/config';
 import { MailService } from 'src/common/mail/mail.service';
 import { EventService } from 'src/event/event.service';
 import { OrganizerService } from 'src/organizer/organizer.service';
+import { OrganizerSchema } from 'src/organizer/schema/organizer.schema';
+import { EventUnitSchema } from 'src/event-unit/schema/event-unit.schema';
+import { EventSchema } from 'src/event/schema/event.schema';
+import { UnitAdminSchema } from 'src/unit-admin/schema/unit-admin.schema';
+import { EventUnitService } from 'src/event-unit/event-unit.service';
+import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
+import { UnitSchema } from 'src/unit/schema/unit.schema';
+import { UnitMemberSchema } from 'src/unit-member/schema/unit-member.schema';
+import { AdminSchema } from 'src/admin/schema/admin.schema';
+import { UnitMemberService } from 'src/unit-member/unit-member.service';
+import { AdminService } from 'src/admin/admin.service';
+import { UnitService } from 'src/unit/unit.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'User', schema: UserSchema },
-      { name: 'Participant', schema: ParticipantSchema }
+      { name: 'Participant', schema: ParticipantSchema },
+      { name: "Organizer", schema: OrganizerSchema },
+      { name: "EventUnit", schema: EventUnitSchema },
+      { name: "Event", schema: EventSchema },
+      { name: "UnitAdmin", schema: UnitAdminSchema },
+      { name: "Unit", schema: UnitSchema},
+      { name: "UnitMember", schema: UnitMemberSchema },
+      { name: "Admin", schema: AdminSchema }
     ]),
     EventModule,
     AuthModule,
@@ -40,7 +59,7 @@ import { OrganizerService } from 'src/organizer/organizer.service';
     })
   ],
   controllers: [UserController],
-  providers: [UserService, ParticipantService, MailService, EventService, OrganizerService],
-  exports: [UserService]
+  providers: [UserService, ParticipantService, MailService, EventService, OrganizerService, EventUnitService, EventService, UnitAdminService, UnitMemberService, AdminService, UnitService],
+  exports: [UserService, MongooseModule]
 })
 export class UserModule {}

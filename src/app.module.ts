@@ -46,7 +46,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       { name: 'EventUnit', schema: EventUnitSchema },
       { name: 'Unit', schema: UnitSchema },
       { name: 'UnitAdmin', schema: UnitAdminSchema},
-      { name: 'Event', schema: EventSchema}
+      { name: 'Event', schema: EventSchema},
+      { name: 'User', schema: UserSchema }
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

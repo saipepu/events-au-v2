@@ -32,7 +32,7 @@ export class OrganizerService {
       throw new NotAcceptableException({ success: false, error: "Organizer Id is invalid."})
     }
 
-    const organizer = await this.organizerModel.findById(id)
+    const organizer = await (await this.organizerModel.findById(id)).populate(["userId", "eventId"]);
 
     if(!organizer) {
       throw new NotFoundException({ success: false, error: "Organizer not found."})

@@ -37,15 +37,15 @@ export class MailService {
     }
   }
 
-  async sendEventJoinNotification(organizerEmail: string, eventName: string, userEmail: string, organizerName: string) {
-    this.logger.debug(`Preparing to send email to: ${organizerEmail} for event: ${eventName}`);
+  async sendEventJoinNotification(organizerEmail: string, userEmail: string, organizerName: string) {
+    // this.logger.debug(`Preparing to send email to: ${organizerEmail} for event: ${eventName}`);
     try {
       await this.mailerService.sendMail({
         to: organizerEmail,
         subject: 'New User Joined Your Event',
         template: './event-join', // The name of the template file (event-join.hbs)
         context: {
-          eventName: eventName,
+          // eventName: eventName,
           userEmail: userEmail,
           organizerName: organizerName,
         },
