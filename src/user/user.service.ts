@@ -9,7 +9,6 @@ import { CreateParticipantDto } from 'src/participant/dto/create-participant.dto
 import { ParticipantService } from 'src/participant/participant.service';
 import { MailService } from 'src/common/mail/mail.service';
 import { OrganizerService } from 'src/organizer/organizer.service';
-// import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class UserService {
@@ -20,7 +19,6 @@ export class UserService {
     private unitMemberService: UnitMemberService,
     private mailService: MailService,
     private organizerService: OrganizerService,
-    // private eventService: EventService,
   ) {}
 
   async findAll(query: Query) {
@@ -87,30 +85,21 @@ export class UserService {
         eventId: eventId
       };
         
-      const participant = await this.participantService.create(participantDto);
+      // const participant = await this.participantService.create(participantDto);
 
-      // Find the organizer for the event
+      // // Find the organizer for the event
+      console.log(eventId)
       const organizersResponse = await this.organizerService.findAll({ eventId });
+      console.log(organizersResponse)
       if (organizersResponse.success) {
         const organizers = organizersResponse.message;
-        const organizer = organizers.find((org: any) => org.eventId.toString() === eventId);
+        const mailList : string[] = organizers.map((organizer) => organizer.userId.email);
+        console.log(mailList)
+        await this.mailService.sendEventJoinNotification(mailList, user.email, "Organizer");
 
-        if (organizer) {
-          const organizerId = organizer.userId.toString();
-          const organizerUser = await this.findById(organizerId);
-          const organizerEmail = organizerUser.message.email;
-          const organizerName = organizerUser.message.firstName;
-
-          // Fetch event details to get the event name
-          // const event = await this.eventService.findById(eventId);
-          // const eventName = event.name;
-
-          // Send email notification to the organizer
-          await this.mailService.sendEventJoinNotification(organizerEmail, user.email, organizerName);
-        }
       }
 
-      return participant;
+      return 'participant';
     } catch (err) {
       throw new BadRequestException({ success: false, error: err });
     }

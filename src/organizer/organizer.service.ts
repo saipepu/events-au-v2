@@ -21,7 +21,10 @@ export class OrganizerService {
 
   async findAll(query: Query) {
   
+    console.log(query)
     const organizers = await this.organizerModel.find(query)
+                                .populate(["userId", "eventId"])
+                                .exec();
 
     return { success: true, message: organizers}
   }
