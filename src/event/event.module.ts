@@ -19,6 +19,9 @@ import { UnitModule } from 'src/unit/unit.module';
 import { UserModule } from 'src/user/user.module';
 import { MailService } from 'src/common/mail/mail.service';
 import { UnitAdminModule } from 'src/unit-admin/unit-admin.module'; 
+import { UserService } from 'src/user/user.service';
+import { UnitMemberModule } from 'src/unit-member/unit-member.module';
+import { UnitMemberService } from 'src/unit-member/unit-member.service';
 
 @Module({
   imports: [
@@ -29,11 +32,12 @@ import { UnitAdminModule } from 'src/unit-admin/unit-admin.module';
       { name: "Organizer", schema: OrganizerSchema }
     ]),
     UnitModule,
+    UnitMemberModule,
     forwardRef(() => UserModule),
     UnitAdminModule,
   ],
   controllers: [EventController],
-  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService],
+  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService, UserService, UnitMemberService],
   exports: [EventService]
 })
 export class EventModule {}
