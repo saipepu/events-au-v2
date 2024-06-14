@@ -22,6 +22,7 @@ import { UnitAdminModule } from 'src/unit-admin/unit-admin.module';
 import { UserService } from 'src/user/user.service';
 import { UnitMemberModule } from 'src/unit-member/unit-member.module';
 import { UnitMemberService } from 'src/unit-member/unit-member.service';
+import { AdminService } from 'src/admin/admin.service';
 
 @Module({
   imports: [
@@ -35,9 +36,11 @@ import { UnitMemberService } from 'src/unit-member/unit-member.service';
     UnitMemberModule,
     forwardRef(() => UserModule),
     UnitAdminModule,
-  ],
+  forwardRef(() => ParticipantModule),
+  forwardRef(() => OrganizerModule),
+    ],
   controllers: [EventController],
-  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService, UserService, UnitMemberService],
+  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService, UserService, UnitMemberService, AdminService],
   exports: [EventService]
 })
 export class EventModule {}

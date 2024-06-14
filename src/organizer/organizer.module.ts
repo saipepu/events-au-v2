@@ -23,8 +23,8 @@ import { EventUnitModule } from 'src/event-unit/event-unit.module';
     forwardRef(() => ParticipantModule),
     EventUnitModule,
     UnitModule,
-    UserModule,
-    EventModule,
+    forwardRef(() => UserModule),
+    forwardRef(() => EventModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],

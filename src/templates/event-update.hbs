@@ -1,0 +1,9 @@
+<h1>Event Update Notification</h1>
+<h2>Event "{{eventName}}" has been updated</h2>
+<p>The following changes have been made:</p>
+<ul>
+{{#each changes}}
+    <li>{{@key}}: from "{{this.original}}" to "{{this.updated}}"</li>
+{{/each}}
+</ul>
+

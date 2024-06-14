@@ -17,7 +17,7 @@ export class AdminService {
 
   async findAll(): Promise<{ success: boolean, message: Admin[] }> {
     
-    const admins = await this.adminModel.find()
+    const admins = await this.adminModel.find().populate('userId').exec()
 
     return { success: true, message: admins }
 

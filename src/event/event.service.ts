@@ -1,6 +1,8 @@
 import { ParticipantService } from 'src/participant/participant.service';
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotAcceptableException,
@@ -20,6 +22,7 @@ import { UnitService } from 'src/unit/unit.service';
 import { UserService } from 'src/user/user.service';
 import { MailService } from 'src/common/mail/mail.service';
 import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
+import { AdminService } from 'src/admin/admin.service';
 
 @Injectable()
 export class EventService {
@@ -28,12 +31,16 @@ export class EventService {
   constructor(
     @InjectModel(Event.name)
     private eventModel: mongoose.Model<Event>,
+    @Inject(forwardRef(() => OrganizerService))
     private organizerService: OrganizerService,
     private eventUnitService: EventUnitService,
     private unitService: UnitService,
     private userService: UserService,
     private mailService: MailService,
     private unitAdminService: UnitAdminService,
+    @Inject(forwardRef(() => ParticipantService))
+    private participantService: ParticipantService,
+    private adminService: AdminService
   ) {}
 
   // find all events
@@ -167,20 +174,64 @@ export class EventService {
     }
 
     try {
-      const res = await this.eventModel.findByIdAndUpdate(id, body, {
+
+      const originalEvent = event.toObject();
+
+      const updatedEvent  = await this.eventModel.findByIdAndUpdate(id, body, {
         new: true,
         runValidators: true,
       });
 
-      // this.mailService.sendRoleChangeNotification(
-      //   "saipepu.mdy257@gmail.com",
-      //   "TestMail",
-      //   "event status changed"
-      // )
+      const changes = this.getChanges(originalEvent, updatedEvent.toObject());
+      // console.log('Changes:', changes);
+      // How do i get all participants of an event
+      // use get all partipants then check which one have the same event id
+      const participants = await this.participantService.findAll({ eventId: id });
+      const participantEmails = participants.message.map((participant) => participant.email);
+      console.log(participantEmails);
+      
+      const units = await this.eventUnitService.findByEventId(id);
+      // console.log(units);
 
-      return { success: true, message: res };
+      // Extract unit IDs from the units
+      const unitIds = units.message.map(unit => unit._id.toString());
+
+      // Retrieve all admins
+      const allAdmins = await this.adminService.findAll();
+      const admins = allAdmins.message;
+
+      // Filter admins by unit IDs
+      const relevantAdmins = admins.filter(admin => unitIds.includes(admin.unitId.toString()));
+      // console.log(relevantAdmins);
+
+      // Extract emails from populated userId field
+      const adminEmails = relevantAdmins.map(admin => admin.userId.email);
+      console.log(adminEmails);
+
+      // Combine participantEmails and adminEmails
+      const emailsList = [...new Set([...participantEmails, ...adminEmails])]; // Remove duplicates using Set
+      console.log('Combined Emails List:', emailsList);
+
+      // Send notification
+      await this.mailService.sendEventUpdateNotification(emailsList, updatedEvent.name, changes);
+      
+
+      return { success: true, message: updatedEvent  };
     } catch (err) {
       throw new BadRequestException({ success: false, error: err });
     }
+  }
+
+  private getChanges(original: any, updated: any) {
+    const changes = {};
+    for (const key in updated) {
+      if (original[key] !== updated[key]) {
+        changes[key] = {
+          original: original[key],
+          updated: updated[key]
+        };
+      }
+    }
+    return changes;
   }
 }
