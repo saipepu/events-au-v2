@@ -18,11 +18,11 @@ export class MailService {
     });
   }
 
-  async sendEventCreationNotification(adminEmail: string, eventName: string, organizerName: string) {
+  async sendEventCreationNotification(adminEmail: string[], eventName: string, organizerName: string) {
     this.logger.debug(`Preparing to send email to: ${adminEmail} for event: ${eventName}`);
     try {
       await this.mailerService.sendMail({
-        to: adminEmail,
+        to: adminEmail.join(', '),
         subject: 'New Event Created',
         template: './new-event', // The name of the template file (new-event.hbs)
         context: {
@@ -44,6 +44,25 @@ export class MailService {
         to: organizerEmail.join(', '),
         subject: 'New User Joined Your Event',
         template: './event-join', // The name of the template file (event-join.hbs)
+        context: {
+          // eventName: eventName,
+          userEmail: userEmail,
+          organizerName: organizerName,
+        },
+      });
+      this.logger.debug(`Email sent to: ${organizerEmail}`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to: ${organizerEmail}`, err.stack);
+      throw err;
+    }
+  }
+  async sendLeaveEventNotification(organizerEmail: string[], userEmail: string, organizerName: string) {
+    // this.logger.debug(`Preparing to send email to: ${organizerEmail} for event: ${eventName}`);
+    try {
+      await this.mailerService.sendMail({
+        to: organizerEmail.join(', '),
+        subject: 'User have left Your Event',
+        template: './event-leave', // The name of the template file (event-join.hbs)
         context: {
           // eventName: eventName,
           userEmail: userEmail,

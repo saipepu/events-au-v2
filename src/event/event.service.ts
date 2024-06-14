@@ -23,7 +23,6 @@ import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
 
 @Injectable()
 export class EventService {
-
   private readonly logger = new Logger(EventService.name);
 
   constructor(
@@ -103,29 +102,40 @@ export class EventService {
         const { success, message } = await this.unitAdminService.findByUnitId(
           unit.message._id.toString(),
         );
-        this.logger.debug(`Admin details fetched: ${JSON.stringify(message)}`);
-
         if (success && message.length > 0) {
+          const adminEmails = [];
           for (const admin of message) {
             const adminDetails = await this.userService.findById(admin.userId);
-            this.logger.debug(`Admin details: ${JSON.stringify(adminDetails)}`);
-
             if (adminDetails.success) {
-              const adminEmail = adminDetails.message.email;
-              this.logger.debug(`Sending email to: ${adminEmail}`);
-
-              // Send email to admin
-              await this.mailService.sendEventCreationNotification(
-                adminEmail,
-                body.name,
-                u.message.firstName
-              );
-              this.logger.debug(`Email sent to: ${adminEmail}`);
+              adminEmails.push(adminDetails.message.email);
             }
           }
-        }
 
+          await this.mailService.sendEventCreationNotification(
+            adminEmails,
+            body.name,
+            u.message.firstName,
+          );
+          this.logger.debug(`Email sent to: ${adminEmails}`);
+        }
         return { success: true, message: event };
+
+        // // Get unit's admin details
+        // const { success, message } = await this.unitAdminService.findByUnitId(
+        //   unit.message._id.toString(),
+        // );
+        // this.logger.debug(`Admin details fetched: ${JSON.stringify(message)}`);
+
+        // if (success && message.length > 0) {
+        //   for (const admin of message) {
+        //     const adminDetails = await this.userService.findById(admin.userId);
+        //     this.logger.debug(`Admin details: ${JSON.stringify(adminDetails)}`);
+
+        //     if (adminDetails.success) {
+        //       const adminEmail = adminDetails.message.email;
+        //       this.logger.debug(`Sending email to: ${adminEmail}`);
+
+        // Send email to admin
       } else {
         return {
           success: false,
