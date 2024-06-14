@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ParticipantSchema } from './schema/participant.schema';
 import { ParticipantController } from './participant.controller';
@@ -7,6 +7,8 @@ import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { OrganizerModule } from 'src/organizer/organizer.module';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Module({
   imports: [
@@ -24,10 +26,11 @@ import { ConfigService } from '@nestjs/config';
           }
         }
       }
-    })
+    }),
+    forwardRef(() => OrganizerModule) //<--- 
   ],
   controllers: [ParticipantController],
-  providers: [ParticipantService],
+  providers: [ParticipantService, MailService],
   exports: [ParticipantService]
 })
 export class ParticipantModule {}

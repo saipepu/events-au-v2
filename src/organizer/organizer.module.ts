@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { OrganizerSchema } from './schema/organizer.schema';
 import { OrganizerService } from './organizer.service';
@@ -20,7 +20,7 @@ import { EventUnitModule } from 'src/event-unit/event-unit.module';
       { name: "Organizer", schema: OrganizerSchema },
       { name: "User", schema: UserSchema },
     ]),
-    ParticipantModule,
+    forwardRef(() => ParticipantModule),
     EventUnitModule,
     UnitModule,
     UserModule,
