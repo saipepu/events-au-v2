@@ -76,4 +76,23 @@ export class MailService {
       throw err;
     }
   }
+
+  async sendEventUpdateNotification(emails: string[], eventName: string, changes: any) {
+    this.logger.debug(`Preparing to send email to: ${emails} for event: ${eventName}`);
+    try {
+      await this.mailerService.sendMail({
+        to: emails.join(', '),
+        subject: 'Event Update Notification',
+        template: './event-update', // The name of the template file (event-update.hbs)
+        context: {
+          eventName: eventName,
+          changes: changes
+        },
+      });
+      this.logger.debug(`Email sent to: ${emails}`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to: ${emails}`, err.stack);
+      throw err;
+    }
+  }
 }

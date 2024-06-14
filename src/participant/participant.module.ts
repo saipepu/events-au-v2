@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { OrganizerModule } from 'src/organizer/organizer.module';
 import { MailService } from 'src/common/mail/mail.service';
+import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { MailService } from 'src/common/mail/mail.service';
         }
       }
     }),
-    forwardRef(() => OrganizerModule) //<--- 
+    forwardRef(() => OrganizerModule),
+    forwardRef(() => EventModule) //<--- 
   ],
   controllers: [ParticipantController],
   providers: [ParticipantService, MailService],
