@@ -85,12 +85,12 @@ export class UserService {
         eventId: eventId
       };
         
-      // const participant = await this.participantService.create(participantDto);
+      const participant = await this.participantService.create(participantDto);
 
       // // Find the organizer for the event
-      console.log(eventId)
+      // console.log(eventId)
       const organizersResponse = await this.organizerService.findAll({ eventId });
-      console.log(organizersResponse)
+      // console.log(organizersResponse)
       if (organizersResponse.success) {
         const organizers = organizersResponse.message;
         const mailList : string[] = organizers.map((organizer) => organizer.userId.email);
@@ -99,7 +99,7 @@ export class UserService {
 
       }
 
-      return 'participant';
+      return participant;
     } catch (err) {
       throw new BadRequestException({ success: false, error: err });
     }

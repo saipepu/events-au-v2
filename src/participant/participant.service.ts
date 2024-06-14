@@ -5,12 +5,16 @@ import mongoose from 'mongoose';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { Query } from 'express-serve-static-core'
 import { User } from 'src/user/schema/user.schema';
+// import { MailService } from 'src/common/mail/mail.service';
+// import { OrganizerService } from 'src/organizer/organizer.service';
 
 @Injectable()
 export class ParticipantService {
   constructor(
     @InjectModel(Participant.name)
     private participantModel: mongoose.Model<Participant>,
+    // private mailService: MailService,
+    // private organizerService: OrganizerService,
   ) {}
 
   async findAll(query: Query) {
@@ -97,6 +101,15 @@ export class ParticipantService {
           }
         )
 
+        // const organizersResponse = await this.organizerService.findAll({ eventId });
+        // console.log(organizersResponse)
+        // if (organizersResponse.success) {
+        //   const organizers = organizersResponse.message;
+        //   const mailList : string[] = organizers.map((organizer) => organizer.userId.email);
+        //   console.log(mailList)
+        //   await this.mailService.sendEventJoinNotification(mailList, user.email, "Organizer");
+  
+        // }
         return { success: true, message: participant }
 
       } else {
