@@ -59,6 +59,7 @@ export class MailService {
   async sendLeaveEventNotification(organizerEmail: string[], userEmail: string, organizerName: string) {
     // this.logger.debug(`Preparing to send email to: ${organizerEmail} for event: ${eventName}`);
     try {
+      console.log(organizerEmail);
       await this.mailerService.sendMail({
         to: organizerEmail.join(', '),
         subject: 'User have left Your Event',

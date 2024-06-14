@@ -1,6 +1,6 @@
 import { EventService } from 'src/event/event.service';
 import { EventUnitService } from 'src/event-unit/event-unit.service';
-import { BadRequestException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Organizer } from './schema/organizer.schema';
@@ -15,6 +15,7 @@ export class OrganizerService {
   constructor(
     @InjectModel(Organizer.name)
     private organizerModel: mongoose.Model<Organizer>,
+    @Inject(forwardRef(() => ParticipantService)) //<--- 
     private participantService: ParticipantService,
     private eventUnitService: EventUnitService
   ) {}
