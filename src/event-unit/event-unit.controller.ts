@@ -14,7 +14,7 @@ export class EventUnitController {
   ) {}
 
   @Get('event-units')
-  @ApiOperation({ summary: 'Getting the Unit&Event relation table.' })
+  @ApiOperation({ summary: 'Finding all Related Event and Unit' })
   @ApiResponse({ status: 200, description: 'Get all event units', schema: resGetAllEventUnitDto })
   async findAll(
     @Query()
