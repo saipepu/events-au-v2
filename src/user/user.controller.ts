@@ -62,12 +62,28 @@ export class UserController {
   // Get All Users in a Unit
  
   @Get('users/unit/:id')
+  @ApiOperation({ summary: 'Find all users in a unit' })
   @ApiResponse({ status: 200, description: 'Users found (can be empty)', schema: resGetAllDto })
   async findByUnitId(
     @Param('id')
     unitId: string
   ) {
     return this.unitMemberService.findByUnitId(unitId)
+  }
+
+  @Put('user/:id')
+  @ApiOperation({ summary: 'Update user' })
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'User updated', schema: resGetByIdDto })
+  async update(
+    @Param('id')
+    id: string,
+    @Body()
+    body: UpdateUserDto
+  ) {
+    return this.userService.update(id, body)
   }
 
   // Create Event
