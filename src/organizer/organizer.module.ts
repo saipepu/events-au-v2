@@ -13,6 +13,7 @@ import { UserModule } from 'src/user/user.module';
 import { ParticipantModule } from 'src/participant/participant.module';
 import { EventModule } from 'src/event/event.module';
 import { EventUnitModule } from 'src/event-unit/event-unit.module';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { EventUnitModule } from 'src/event-unit/event-unit.module';
     })
   ],
   controllers: [OrganizerController],
-  providers: [OrganizerService, JwtStrategy],
+  providers: [OrganizerService, JwtStrategy, MailService],
   exports: [OrganizerService]
 })
 export class OrganizerModule {}
