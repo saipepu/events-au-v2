@@ -11,13 +11,12 @@ export class UnitMemberService {
     private unitMemberModel: mongoose.Model<UnitMember>,
   ) {}
 
-  async findByUserId(userId) {
+  // Find By User ID
+  async findByUserId(userId: string) {
 
     try {
 
-      const unitMembers = await this.unitMemberModel.find().populate('unitId').populate('userId').exec()
-      let result = unitMembers.map((item, index) => item.userId._id == userId ? item.unitId : '' )
-      result = result.filter((item, index) => item != '')
+      const result = await this.unitMemberModel.find({ userId: userId }).populate('unitId').populate('userId').exec()
 
       return { success: true, message: result }
 
@@ -28,13 +27,12 @@ export class UnitMemberService {
 
   }
 
-    async findByUnitId(unitId) {
+  // Find By Unit ID
+  async findByUnitId(unitId) {
 
     try {
 
-      const unitMembers = await this.unitMemberModel.find().populate('unitId').populate('userId').exec()
-      let result = unitMembers.map((item: any, index) => item.unitId._id == unitId ? item.userId : '' )
-      result = result.filter((item, index) => item != '')
+      const result = await this.unitMemberModel.find({ unitId: unitId }).populate('unitId').populate('userId').exec()
 
       return { success: true, message: result }
 
@@ -46,6 +44,7 @@ export class UnitMemberService {
 
   }
 
+  // Create Unit Member
   async create(body: CreateUnitMemberDto) {
 
     try {

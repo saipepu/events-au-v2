@@ -8,14 +8,19 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UnitMemberModule } from 'src/unit-member/unit-member.module';
 import { EventUnitModule } from 'src/event-unit/event-unit.module';
+import { UnitAdminModule } from 'src/unit-admin/unit-admin.module';
+import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
+import { UnitAdminSchema } from 'src/unit-admin/schema/unit-admin.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Unit', schema: UnitSchema }
+      { name: 'Unit', schema: UnitSchema },
+      { name: 'UnitAdmin', schema: UnitAdminSchema }
     ]),
     UnitMemberModule,
     EventUnitModule,
+    UnitAdminModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -30,7 +35,7 @@ import { EventUnitModule } from 'src/event-unit/event-unit.module';
     }),
   ],
   controllers: [UnitController],
-  providers: [UnitService],
+  providers: [UnitService, UnitAdminService],
   exports: [UnitService]
 })
 export class UnitModule {}

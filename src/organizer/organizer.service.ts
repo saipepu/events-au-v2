@@ -7,7 +7,7 @@ import { Organizer } from './schema/organizer.schema';
 import { Query } from 'express-serve-static-core'
 import { CreateOrgDto } from './dto/create-org.dto';
 import { ParticipantService } from 'src/participant/participant.service';
-import { UpdateParticipantStatusDto } from 'src/participant/dto/update-status-participant.dto';
+import { UpdateParticipantStatusManyDto, UpdateParticipantStatusSingleDto } from 'src/participant/dto/update-participant-status.dto';
 import { updateEventUnitDto } from 'src/event-unit/dto/update-event-unit.dto';
 
 @Injectable()
@@ -19,13 +19,15 @@ export class OrganizerService {
     private eventUnitService: EventUnitService
   ) {}
 
+  // Get All Organizers
   async findAll(query: Query) {
   
-    const organizers = await this.organizerModel.find(query)
+    const organizers = await this.organizerModel.find(query).populate(['userId', 'eventId']).exec();
 
     return { success: true, message: organizers}
   }
 
+  // Get Organizer by ID
   async findById(id: string) {
 
     if(!mongoose.isValidObjectId(id)) {
@@ -41,6 +43,7 @@ export class OrganizerService {
     return { success: true, message: organizer }
   }
 
+  // Create Organizer
   async create(body: CreateOrgDto) {
 
     try {
@@ -56,12 +59,12 @@ export class OrganizerService {
     }
   }
 
-  async manageParticipant(body: UpdateParticipantStatusDto) {
+  // Manage Participant
+  async updateParticipantStatus(body: UpdateParticipantStatusManyDto | UpdateParticipantStatusSingleDto, updateMany: Boolean) {
 
     try {
 
-      let { participants, status } = body
-
+      let { participantId, participantIds, status } = body as any
       if(status == 'accepted') {
         status = 'participating'
       }
@@ -72,14 +75,13 @@ export class OrganizerService {
         status = 'kicked'
       }
 
-      let result = []
-
-      for(let i=0; i<participants.length; i++) {
-        let res = await this.participantService.updateStatus(participants[i], status)
-        result.push(res)
+      let res: any
+      if(updateMany) {
+        res = await this.participantService.updateManyStatus(participantIds, status)
+      } else {
+        res = await this.participantService.updateSingleStatus(participantId, status)
       }
-
-      return { success: true, message: result }
+      return { success: true, message: res }
 
     } catch(err) {
 
@@ -88,7 +90,7 @@ export class OrganizerService {
     }
   }
 
-  async manageEventUnit(eventId: string, body: updateEventUnitDto) {
+  async updateEventUnit(eventId: string, body: updateEventUnitDto) {
 
     try {
 
