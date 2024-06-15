@@ -20,6 +20,7 @@ export class EventController {
   ) {}
 
   @Get('events')
+  @ApiOperation({ summary: 'Find all events' })
   @ApiResponse({ status: 200, description: 'List of events (can be empty)', schema: resGetAllDto })
   async findAll(
     @Query()
@@ -29,6 +30,7 @@ export class EventController {
   }
 
   @Get('event/:id')
+  @ApiOperation({ summary: 'Find event by Id' })
   @ApiResponse({ status: 200, description: 'Event found', schema: resGetByIdDto })
   async findById(
     @Param('id')

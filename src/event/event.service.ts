@@ -29,20 +29,7 @@ export class EventService {
   // find all events
   async findAll(query: Query) {
 
-    const events = await this.eventModel.find(query)
-
-    let result: any = events
-    for(let i=0; i<result.length; i++) {
-
-      const { success, message }: { success: boolean, message: any } = await this.eventUnitService.findByEventId(result[i]._id.toString())
-
-      let unitNames = []
-      for(let j=0; j<message.length; j++) {
-        unitNames.push(message[j].name)
-      }
-
-      result[i] = { ...result[i].toObject(), units: unitNames }
-    }
+    const events = await this.eventModel.find(query);
 
     return { success: true, message: events };
   }

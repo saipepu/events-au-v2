@@ -9,11 +9,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UnitAdminModule } from 'src/unit-admin/unit-admin.module';
 import { UserModule } from 'src/user/user.module';
+import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Admin', schema: AdminSchema}
+      { name: 'Admin', schema: AdminSchema},
+      { name: 'UnitAdmin', schema: AdminSchema }
     ]),
     EventModule,
     UnitAdminModule,
@@ -32,7 +34,7 @@ import { UserModule } from 'src/user/user.module';
     })
   ],
   controllers: [AdminController],
-  providers: [AdminService],
+  providers: [AdminService, UnitAdminService],
   exports: [AdminService]
 })
 export class AdminModule {}
