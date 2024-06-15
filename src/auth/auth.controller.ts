@@ -3,7 +3,7 @@ import { AuthService, SignUpResponse } from './auth.service';
 import { SignUpDto } from './dto/signUp.dto';
 import { SignInDto } from './dto/signIn.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { RestrictedToken } from './schema/restrictedToken.schema';
 import { SignOutDto } from './dto/signOut.dto';
 import { User } from 'src/user/schema/user.schema';
@@ -17,7 +17,9 @@ export class AuthController {
     private authService: AuthService
   ) {}
 
+  // Create a new user
   @Post('/signup')
+  @ApiOperation({ summary: 'Create a new user.' })
   @ApiResponse({ status: 201, description: 'User created successfully.', schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'object', properties: { user: { $ref: getSchemaPath(User) } } } } }})
   @ApiResponse({ status: 400, description: 'User already exist. Please login.', schema: { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' } } }})
   async signUp(
@@ -27,7 +29,9 @@ export class AuthController {
     return this.authService.signUp({ isAdmin: false, body: body })
   }
 
+  // Create a new admin
   @Post('/admin/signup')
+  @ApiOperation({ summary: 'Create a new admin.' })
   @ApiResponse({ status: 201, description: 'User created successfully.', schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'object', properties: { user: { $ref: getSchemaPath(User) }, admin: { $ref: getSchemaPath(Admin) } } } } }})
   async adminSignUp(
     @Body()
@@ -36,7 +40,9 @@ export class AuthController {
     return this.authService.signUp({ isAdmin: true, body: body })
   }
 
+  // Sign in user
   @Post('/signin')
+  @ApiOperation({ summary: 'Sign in user with firebase id.' })
   @ApiResponse({ status: 200, description: 'User signed in successfully.', schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'object', properties: { token: { type: 'string' } } } } }})
   async signIn(
     @Body()
@@ -45,7 +51,9 @@ export class AuthController {
     return this.authService.signIn(body)
   }
 
+  // Protected route
   @Get('/protected')
+  @ApiOperation({ summary: 'Protected route (Test if your token is valid or if you have signin or not).' })
   @UseGuards(AuthGuard())
   @ApiBearerAuth('bearer-token')
   async protected(
@@ -54,7 +62,9 @@ export class AuthController {
     return req.user
   }
 
+  // Sign out user
   @Get('/signout')
+  @ApiOperation({ summary: 'Sign out user.' })
   @UseGuards(AuthGuard())
   @ApiBearerAuth('bearer-token')
   @ApiResponse({ status: 200, description: 'User signed out successfully.', schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string', example: 'Signout complete.' } } }})

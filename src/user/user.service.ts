@@ -21,22 +21,8 @@ export class UserService {
 
     const users = await this.userModel
         .find(query)
-    
-    let result: any = users
-    for(let i=0; i<result.length; i++) {
 
-      const { success, message }: { success: boolean, message: any } = await this.unitMemberService.findByUserId(result[i]._id.toString())
-      // success and unitIds
-
-      let unitNames = []
-      for(let j=0; j<message.length; j++) {
-        unitNames.push(message[j].name)
-      }
-
-      result[i] = {...result[i].toObject(), units: unitNames }
-    }
-
-    return { success: true, message: result }
+    return { success: true, message: users }
   }
 
   async findById(id: string) {
@@ -75,15 +61,12 @@ export class UserService {
 
     try {
 
-      let participantDto = {
-        email: user.email,
-        phone: user.phone,
-        status: "pending",
-        userId: user._id,
-        eventId: eventId
+      let dto: CreateParticipantDto = {
+        eventId: eventId,
+        userId: user._id
       }
         
-      return this.participantService.create(participantDto)
+      return this.participantService.create(dto)
 
     } catch(err) {
 

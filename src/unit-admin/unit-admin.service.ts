@@ -19,12 +19,9 @@ export class UnitAdminService {
 
   async findByAdminId(adminId) {
 
-    console.log(adminId)
     try {
 
-      const unitAdmins = await this.unitAdminModel.find().populate('adminId').populate('unitId').exec()
-      let result = unitAdmins.map((item: any, index) => item.adminId._id == adminId ? item.unitId : '' )
-      result = result.filter((item, index) => item != '')
+      const result = await this.unitAdminModel.find({ adminId: adminId }).populate("adminId").populate('unitId').exec()
 
       return { success: true, message: result }
 
@@ -36,14 +33,11 @@ export class UnitAdminService {
 
   }
 
-  async findByUnitId(unitId) {
+  async findByUnitId(unitId: string) {
 
-    console.log(unitId)
     try {
 
-      const unitAdmins = await this.unitAdminModel.find().populate('adminId').populate('unitId').exec()
-      let result = unitAdmins.map((item: any, index) => item.unitId._id == unitId ? item.adminId : '' )
-      result = result.filter((item, index) => item != '')
+      const result = await this.unitAdminModel.find({ unitId: unitId }).populate('adminId').populate('unitId').exec()
 
       return { success: true, message: result }
 

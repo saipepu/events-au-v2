@@ -12,6 +12,7 @@ export class EventUnitService {
     private eventUnitModel: mongoose.Model<EventUnit>,
   ) {}
 
+  // Find All Related Events and Units
   async findAll(query?: Query) {
 
     try {
@@ -28,19 +29,17 @@ export class EventUnitService {
 
   }
 
-  async findByUnitId(unitId) {
+  // Find Event by Unit ID
+  async findByUnitId(unitId: string) {
 
     try {
 
-      const eventUnit = await this.eventUnitModel.find().populate('unitId').populate('eventId').exec()
-      let result = eventUnit.map((item: any, index) => item.unitId._id == unitId ? item.eventId : '' )
-      result = result.filter((item, index) => item != '')
-
-      if(result.length == 0) {
+      const eventUnit = await this.eventUnitModel.find({ unitId: unitId }).populate('unitId').populate('eventId').exec()
+      if(eventUnit.length == 0) {
         throw new NotFoundException('No Event found for this Unit.')
       }
       
-      return { success: true, message: result }
+      return { success: true, message: eventUnit }
       
     } catch(err) {
       
@@ -50,13 +49,12 @@ export class EventUnitService {
 
   }
 
-  async findByEventId(eventId) {
+  // Find Unit by Event ID
+  async findByEventId(eventId: string) {
 
     try {
 
-      const eventUnit = await this.eventUnitModel.find().populate('unitId').populate('eventId').exec()
-      let result = eventUnit.map((item: any, index) => item.eventId._id == eventId ? item.unitId : '' )
-      result = result.filter((item, index) => item != '')
+      const result = await this.eventUnitModel.find({ eventId: eventId }).populate('unitId').populate('eventId').exec()
 
       return { success: true, message: result }
 
@@ -67,6 +65,7 @@ export class EventUnitService {
 
   }
 
+  // Create Related Event Unit
   async create(body: CreateEventUnitDto) {
 
     try {
@@ -83,7 +82,9 @@ export class EventUnitService {
 
   }
 
-  async delete(eventUnitId) {
+  // Remove Related Event Unit
+  // Invoke this method when the event or unit is removed
+  async delete(eventUnitId: string) {
 
     try {
 
