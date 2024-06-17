@@ -47,19 +47,6 @@ export class EventService {
   async findAll(query: Query) {
     const events = await this.eventModel.find(query);
 
-    let result: any = events;
-    for (let i = 0; i < result.length; i++) {
-      const { success, message }: { success: boolean; message: any } =
-        await this.eventUnitService.findByEventId(result[i]._id.toString());
-
-      let unitNames = [];
-      for (let j = 0; j < message.length; j++) {
-        unitNames.push(message[j].name);
-      }
-
-      result[i] = { ...result[i].toObject(), units: unitNames };
-    }
-
     return { success: true, message: events };
   }
 
@@ -111,8 +98,8 @@ export class EventService {
         );
         if (success && message.length > 0) {
           const adminEmails = [];
-          for (const admin of message) {
-            const adminDetails = await this.userService.findById(admin.userId);
+          for (const obj of message) {
+            const adminDetails = await this.userService.findById(obj.adminId.userId.toString());
             if (adminDetails.success) {
               adminEmails.push(adminDetails.message.email);
             }
@@ -127,22 +114,6 @@ export class EventService {
         }
         return { success: true, message: event };
 
-        // // Get unit's admin details
-        // const { success, message } = await this.unitAdminService.findByUnitId(
-        //   unit.message._id.toString(),
-        // );
-        // this.logger.debug(`Admin details fetched: ${JSON.stringify(message)}`);
-
-        // if (success && message.length > 0) {
-        //   for (const admin of message) {
-        //     const adminDetails = await this.userService.findById(admin.userId);
-        //     this.logger.debug(`Admin details: ${JSON.stringify(adminDetails)}`);
-
-        //     if (adminDetails.success) {
-        //       const adminEmail = adminDetails.message.email;
-        //       this.logger.debug(`Sending email to: ${adminEmail}`);
-
-        // Send email to admin
       } else {
         return {
           success: false,
@@ -197,16 +168,11 @@ export class EventService {
       const unitIds = units.message.map(unit => unit._id.toString());
 
       // Retrieve all admins
-      const allAdmins = await this.adminService.findAll();
-      const admins = allAdmins.message;
-
-      // Filter admins by unit IDs
-      const relevantAdmins = admins.filter(admin => unitIds.includes(admin.unitId.toString()));
+      const allAdmins = await this.adminService.findAll({ unitId: { $in: unitIds } });
       // console.log(relevantAdmins);
 
       // Extract emails from populated userId field
-      const adminEmails = relevantAdmins.map(admin => admin.userId.email);
-      console.log(adminEmails);
+      const adminEmails = allAdmins.message.map(admin => admin.userId.email);
 
       // Combine participantEmails and adminEmails
       const emailsList = [...new Set([...participantEmails, ...adminEmails])]; // Remove duplicates using Set

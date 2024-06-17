@@ -18,39 +18,68 @@ export class ParticipantService {
     private organizerService: OrganizerService,
   ) {}
 
+  // Find All Participants
   async findAll(query: Query) {
 
-    const participants = await this.participantModel.find(query)
+    const participants = await this.participantModel.find(query).populate(['userId', 'eventId']).exec();
 
     return { success: true, message: participants }
   }
 
+  // Find Participant by ID
   async findById(id: string) {
 
     if(!mongoose.isValidObjectId(id)) {
-      throw new NotAcceptableException({ success: false, error: "Participant Id is invalid." })
+      throw new NotAcceptableException({ success: false, error: "Participant Id is invalid."})
     }
 
-    const participant = await this.participantModel.findById(id)
+    const participant = await this.participantModel.findById(id).populate(["userId", "eventId"]).exec();
 
     if(!participant) {
-      throw new NotFoundException({ success: false, error: "participant not found."})
+      throw new NotFoundException({ success: false, error: "Participant not found."})
     }
 
     return { success: true, message: participant }
-
   }
 
-  async create(body) {
+  // Find Participant by Event Id
+  async findByEventId(eventId: string) {
+      
+      try {
+  
+        const participants = await this.participantModel.find({ eventId: eventId }).populate(['userId','eventId']).exec()
+  
+        return { success: true, message: participants }
+  
+      } catch(err) {
+  
+        throw new BadRequestException({ success: false, error: err })
+  
+      }
+  
+  }
+
+  // Create Participant
+  async create(body: CreateParticipantDto) {
 
     try {
 
       // check if the participant is already associated with the event
-      let plist: any = await this.participantModel.find({ eventId: body.eventId })
-      plist = plist.map((item,index) => item.userId.toString())
+      let plist: any = await this.participantModel.find({ eventId: body.eventId, participantId: body.userId })
       
-      if(plist.includes(body.userId.toString())) {
-        return { success: false, error: "You have already requested to join the event."}
+      if(plist.length > 0) {
+        if(plist[0].status == 'pending') {
+          return { success: false, error: "You have already requested to join the event."}
+        }
+        if(plist[0].status == 'participating') {
+          return { success: false, error: "You have been approved to participate in this event."}
+        }
+        if(plist[0].status == 'rejected') {
+          return { success: false, error: "Your request to join the event has been rejected."}
+        }
+        if(plist[0].status == 'participated') {
+          return { success: false, error: "You have already participated in this event."}
+        }
       }
 
       const participant = await this.participantModel.create(body)
@@ -64,33 +93,44 @@ export class ParticipantService {
     }
   }
 
-  async updateStatus(participantId: string, status: string) {
+  // Update Participant Status (Many)
+  async updateManyStatus(participantIds: string[], status: string) {
 
     try {
 
-      if(!mongoose.isValidObjectId(participantId)) {
-        return { id: participantId, success: false, error: "Invalid participant id." }
-      }
-
-      await this.participantModel.findByIdAndUpdate(participantId, { status: status }, {
+      let res = await this.participantModel.updateMany({ _id : { $in: participantIds }}, { status: status }, {
         new: true,
         runValidators: true,
       })
 
-      return { id: participantId, success: true }
+      return { success: true, message: "Participant status updated." }
 
     } catch(err) {
 
-      return { id: participantId, success: false, error: err }
+      return { success: false, error: "Participant status upate failed! " + err }
     }
   }
 
+  // Update Participant Status (Single)
+  async updateSingleStatus(participantId: string, status: string) {
+      
+      try {
+        const participant = await this.participantModel.findByIdAndUpdate(participantId, { status: status }, {
+          new: true,
+          runValidators: true,
+        })
+        return { success: true, message: participant }
+      } catch(err) {
+        throw new BadRequestException({ success: false, error: err })
+      }
+  }
+
+  // Participant Leave Event
   async leaveEvent(eventId: string, user: User) {
 
     try {
 
       const participant = await this.participantModel.findOne({ eventId: eventId, userId: user._id })
-      console.log(participant, eventId)
 
       if(participant) {
 
