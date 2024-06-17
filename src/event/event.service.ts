@@ -110,7 +110,6 @@ export class EventService {
             body.name,
             u.message.firstName,
           );
-          this.logger.debug(`Email sent to: ${adminEmails}`);
         }
         return { success: true, message: event };
 
