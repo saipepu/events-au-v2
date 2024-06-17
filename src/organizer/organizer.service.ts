@@ -11,6 +11,7 @@ import { UpdateParticipantStatusDto } from 'src/participant/dto/update-status-pa
 import { updateEventUnitDto } from 'src/event-unit/dto/update-event-unit.dto';
 import { stat } from 'fs';
 import { MailService } from 'src/common/mail/mail.service';
+import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
 
 @Injectable()
 export class OrganizerService {
@@ -21,6 +22,7 @@ export class OrganizerService {
     private participantService: ParticipantService,
     private eventUnitService: EventUnitService,
     private mailService: MailService,
+    private unitAdminService: UnitAdminService,
   ) {}
 
   async findAll(query: Query) {
@@ -132,6 +134,10 @@ export class OrganizerService {
               let r = { unitId: units[i], success: true, message: "Added successfully."}
               result.push(r)
             }
+
+            console.log("unitId: ", units[i])
+            let unitAdmin = await this.unitAdminService.findByUnitId(units[i])
+            console.log("unitAdmin : ", unitAdmin.message)
   
           }
 
