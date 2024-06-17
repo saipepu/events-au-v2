@@ -11,6 +11,7 @@ import { RestrictedToken } from './schema/restrictedToken.schema';
 import { SignOutDto } from './dto/signOut.dto';
 import { Admin } from 'src/admin/schema/admin.schema';
 import { CreateAdminDto } from 'src/admin/dto/create.admin.dto';
+import { UnitMemberService } from 'src/unit-member/unit-member.service';
 
 export interface SignUpResponse {
   success: boolean;
@@ -27,12 +28,11 @@ export class AuthService {
     private restrictedTokenModel: Model<RestrictedToken>,
     private jwtService: JwtService,
     private adminService: AdminService,
+    private unitMemberService: UnitMemberService,
     private unitService: UnitService
   ) {}
 
   async signUp({ isAdmin, body } : { isAdmin: boolean, body: SignUpDto }): Promise<SignUpResponse> {
-
-    console.log(isAdmin, body)
 
     const user = await this.userModel.findOne({ fId: body.fId })
     if(user) {
@@ -48,7 +48,6 @@ export class AuthService {
     } else if( body?.unitId != undefined) {
       
       const unit = await this.unitService.findById(body?.unitId)
-      console.log(unit)
       if(!unit) {
         throw new BadGatewayException({ success: false, error: "Unit id doesn't exist."})
       }
@@ -58,7 +57,6 @@ export class AuthService {
     try {
 
       const res = await this.userModel.create(body)
-      console.log(res, 'user created')
 
       if(isAdmin) {
 
@@ -71,6 +69,8 @@ export class AuthService {
         return { success: true, message: { user: res, admin: admin.message }}
 
       }
+
+      await this.unitMemberService.create({ userId: res._id, unitId: body.unitId })
 
       return { success: true, message: res }
 

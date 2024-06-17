@@ -15,12 +15,27 @@ export class AdminService {
     private userService: UserService,
   ) {}
 
-  async findAll(): Promise<{ success: boolean, message: Admin[] }> {
+  async findAll(query?): Promise<{ success: boolean, message: Admin[] }> {
     
-    const admins = await this.adminModel.find().populate('userId').exec()
+    const admins = await this.adminModel.find(query).populate(['unitId', 'userId']).exec();
 
     return { success: true, message: admins }
 
+  }
+
+  async findById(id: string): Promise<{ success: boolean, message: Admin }> { 
+      
+      if(!mongoose.isValidObjectId(id)) {
+        throw new BadRequestException({ success: false, error: "Admin Id is invalid."})
+      }
+  
+      const admin = await this.adminModel.findById(id)
+  
+      if(!admin) {
+        throw new BadRequestException({ success: false, error: "Admin not found."})
+      }
+
+      return { success: true, message: admin }
   }
 
   async create(body: CreateAdminDto) {

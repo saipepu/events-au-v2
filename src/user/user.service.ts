@@ -1,10 +1,14 @@
 import { UnitMemberService } from './../unit-member/unit-member.service';
 import { UnitService } from 'src/unit/unit.service';
 import { User } from './schema/user.schema';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Query } from 'express-serve-static-core'
+import { Query } from 'express-serve-static-core';
 import { CreateParticipantDto } from 'src/participant/dto/create-participant.dto';
 import { ParticipantService } from 'src/participant/participant.service';
 import { MailService } from 'src/common/mail/mail.service';
@@ -22,106 +26,78 @@ export class UserService {
   ) {}
 
   async findAll(query: Query) {
+    const users = await this.userModel.find(query);
 
-    const users = await this.userModel
-        .find(query)
-    
-    let result: any = users
-    for(let i=0; i<result.length; i++) {
-
-      const { success, message }: { success: boolean, message: any } = await this.unitMemberService.findByUserId(result[i]._id.toString())
-      // success and unitIds
-
-      let unitNames = []
-      for(let j=0; j<message.length; j++) {
-        unitNames.push(message[j].name)
-      }
-
-      result[i] = {...result[i].toObject(), units: unitNames }
-    }
-
-    return { success: true, message: result }
+    return { success: true, message: users };
   }
 
   async findById(id: string) {
-
     try {
-      const user = await this.userModel.findById(id)
+      const user = await this.userModel.findById(id);
 
-      if(user) {
-        return { success: true, message: user }
+      if (user) {
+        return { success: true, message: user };
       } else {
-        throw new NotFoundException("User with this ID does not exist.")
+        throw new NotFoundException('User with this ID does not exist.');
       }
-
-      
-    } catch(err) {
-      
-      throw new NotFoundException({ success: false, error: err })
-
+    } catch (err) {
+      throw new NotFoundException({ success: false, error: err });
     }
   }
 
   async update(id: string, body: any) {
-      
     try {
-      const user = await this.userModel.findByIdAndUpdate(id, body,{
+      const user = await this.userModel.findByIdAndUpdate(id, body, {
         new: true,
         runValidators: true,
-      })
-      return { success: true, message: user }
-    } catch(err) {
-      throw new BadRequestException({ success: false, error: err })
+      });
+      return { success: true, message: user };
+    } catch (err) {
+      throw new BadRequestException({ success: false, error: err });
     }
   }
 
   async joinEvent(eventId: string, user: User) {
     try {
-      let participantDto = {
-        email: user.email,
-        phone: user.phone,
-        status: "pending",
+      let dto: CreateParticipantDto = {
+        eventId: eventId,
         userId: user._id,
-        eventId: eventId
       };
-        
-      const participant = await this.participantService.create(participantDto);
 
       // // Find the organizer for the event
       // console.log(eventId)
-      const organizersResponse = await this.organizerService.findAll({ eventId });
+      const organizersResponse = await this.organizerService.findAll({
+        eventId,
+      });
       // console.log(organizersResponse)
       if (organizersResponse.success) {
         const organizers = organizersResponse.message;
-        const mailList : string[] = organizers.map((organizer) => organizer.userId.email);
-        console.log(mailList)
-        await this.mailService.sendEventJoinNotification(mailList, user.email, "Organizer");
-
+        const mailList: string[] = organizers.map(
+          (organizer) => organizer.userId.email,
+        );
+        console.log(mailList);
+        await this.mailService.sendEventJoinNotification(
+          mailList,
+          user.email,
+          'Organizer',
+        );
       }
-
-      return participant;
+      return this.participantService.create(dto);
     } catch (err) {
       throw new BadRequestException({ success: false, error: err });
     }
   }
 
   async joinUnit(unitId: string, user: User) {
-
     try {
-
       let unitMemberDto = {
         userId: user._id,
-        unitId: unitId
-      }
+        unitId: unitId,
+      };
 
-      return this.unitMemberService.create(unitMemberDto)
-
-    } catch(err) {
-
-      throw new BadRequestException({ success: false, error: err })
-
+      return this.unitMemberService.create(unitMemberDto);
+    } catch (err) {
+      throw new BadRequestException({ success: false, error: err });
     }
-
   }
-
 }

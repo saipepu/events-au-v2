@@ -9,7 +9,7 @@ import { CreateParticipantDto } from 'src/participant/dto/create-participant.dto
 import { AuthGuard } from '@nestjs/passport';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { EventService } from 'src/event/event.service';
-import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('user')
@@ -22,7 +22,9 @@ export class UserController {
     private unitMemberService: UnitMemberService
   ) {}
 
+  // Get All Users
   @Get('users')
+  @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'Users found (can be empty)', schema: resGetAllDto })
   async findAll(
     @Query()
@@ -31,7 +33,9 @@ export class UserController {
     return this.userService.findAll(query)
   }
   
+  // Get User by ID
   @Get('user/:id')
+  @ApiOperation({ summary: 'Find user by ID' })
   @ApiResponse({ status: 200, description: 'User found', schema: resGetByIdDto })
   async findById(
     @Param('id')
@@ -40,9 +44,38 @@ export class UserController {
     return this.userService.findById(id)
   }
 
+  // // Create User
+  // @Put('user/:id')
+  // @ApiOperation({ summary: 'Create new user' })
+  // @UseGuards(AuthGuard())
+  // @ApiBearerAuth('bearer-token')
+  // @ApiResponse({ status: 200, description: 'User updated', schema: resGetByIdDto })
+  // async update(
+  //   @Param('id')
+  //   id: string,
+  //   @Body()
+  //   body: UpdateUserDto
+  // ) {
+  //   return this.userService.update(id, body)
+  // }
+  
+  // Get All Users in a Unit
+ 
+  @Get('users/unit/:id')
+  @ApiOperation({ summary: 'Find all users in a unit' })
+  @ApiResponse({ status: 200, description: 'Users found (can be empty)', schema: resGetAllDto })
+  async findByUnitId(
+    @Param('id')
+    unitId: string
+  ) {
+    return this.unitMemberService.findByUnitId(unitId)
+  }
+
   @Put('user/:id')
+  @ApiOperation({ summary: 'Update user' })
   @UseGuards(AuthGuard())
   @ApiBearerAuth('bearer-token')
+  @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'User updated', schema: resGetByIdDto })
   async update(
     @Param('id')
@@ -52,17 +85,10 @@ export class UserController {
   ) {
     return this.userService.update(id, body)
   }
-  
-  @Get('users/unit/:id')
-  @ApiResponse({ status: 200, description: 'Users found (can be empty)', schema: resGetAllDto })
-  async findByUnitId(
-    @Param('id')
-    unitId: string
-  ) {
-    return this.unitMemberService.findByUnitId(unitId)
-  }
 
+  // Create Event
   @Post('user/create/event') // @Post('/event')
+  @ApiOperation({ summary: 'Create new event (organizer & admin role are branches of user, so call this api to create new event).' })
   @UseGuards(AuthGuard())
   @ApiBearerAuth('bearer-token')
   @ApiBody({ type: CreateEventDto })
@@ -75,8 +101,9 @@ export class UserController {
     return this.eventService.create(body, req.user)
   }
 
-  // need to change to user/join/event/:id
+  // Let user join new Event
   @Post('user/join/event/:id')
+  @ApiOperation({ summary: 'User Join Event' })
   @UseGuards(AuthGuard())
   @ApiBearerAuth('bearer-token')
   @ApiResponse({ status: 200, description: 'User joined event', schema: resJoinEventDto })
