@@ -126,4 +126,24 @@ export class MailService {
       }
     }
   }
+
+  async sendEventUnitUpdateNotification(email: string, action: string, unit: string, eventId: string) {
+    this.logger.debug(`Preparing to send email to: ${email} for action: ${action} on unit: ${unit} in event: ${eventId}`);
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Event Unit Update Notification',
+        template: './event-unit-update', // The name of the template file (event-unit-update.hbs)
+        context: {
+          action: action,
+          unit: unit,
+          eventId: eventId,
+        },
+      });
+      this.logger.debug(`Email sent to: ${email}`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to: ${email}`, err.stack);
+      throw err;
+    }
+  }
 }
