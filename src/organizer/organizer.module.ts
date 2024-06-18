@@ -16,6 +16,8 @@ import { EventUnitModule } from 'src/event-unit/event-unit.module';
 import { MailService } from 'src/common/mail/mail.service';
 import { UnitAdminModule } from 'src/unit-admin/unit-admin.module';
 import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
+import { UserService } from 'src/user/user.service';
+import { UnitMemberModule } from 'src/unit-member/unit-member.module';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
     UnitModule,
     forwardRef(() => UserModule),
     forwardRef(() => EventModule),
+    forwardRef(() => UnitMemberModule),
     UnitAdminModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
@@ -43,7 +46,7 @@ import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
     })
   ],
   controllers: [OrganizerController],
-  providers: [OrganizerService, JwtStrategy, MailService, UnitAdminService],
+  providers: [OrganizerService, JwtStrategy, MailService, UnitAdminService, UserService],
   exports: [OrganizerService]
 })
 export class OrganizerModule {}
