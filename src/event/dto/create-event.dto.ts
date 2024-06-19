@@ -1,6 +1,6 @@
 import { Optional } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmpty, IsNotEmpty } from "class-validator";
+import { IsEmpty, IsNotEmpty, Matches } from "class-validator";
 
 export class CreateEventDto {
   @ApiProperty({ example: "Event Name", description: "Name of the event" })
@@ -15,21 +15,25 @@ export class CreateEventDto {
   @Optional()
   readonly location: string;
 
-  @ApiProperty({ example: "2021-12-31T23:59:59.999Z", description: "Start date of the event" })
+  @ApiProperty({ example: "dd-mm-yyyy or empty", description: "Start date of the event" })
+  @Matches(/^$|(^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4})$/, { message: "Invalid start date format. Please use dd-mm-yyyy" })
   @Optional()
-  readonly startDate: Date;
+  readonly startDate: string;
 
-  @ApiProperty({ example: "2021-12-31T23:59:59.999Z", description: "End date of the event" })
+  @ApiProperty({ example: "dd-mm-yyyy or empty", description: "Start date of the event" })
+  @Matches(/^$|^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/, { message: "Invalid end date format. Please use dd-mm-yyyy" })
   @Optional()
-  readonly endDate: Date;
+  readonly endDate: string;
 
-  @ApiProperty({ example: "2021-12-31T23:59:59.999Z", description: "Start time of the event" })
+  @ApiProperty({ example: "hh:mm or empty", description: "Start time of the event" })
+  @Matches(/^$|^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "Invalid start time format. Please use hh:mm" })
   @Optional()
-  readonly startTime: Date;
+  readonly startTime: string;
 
-  @ApiProperty({ example: "2021-12-31T23:59:59.999Z", description: "End time of the event" })
+  @ApiProperty({ example: "hh:mm or empty", description: "Start time of the event" })
+  @Matches(/^$|^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "Invalid end time format. Please use hh:mm" })
   @Optional()
-  readonly endTime: Date;
+  readonly endTime: string;
 
   @ApiProperty({ example: "No Alcohol", description: "Restrictions of the event" })
   @Optional()
@@ -39,7 +43,7 @@ export class CreateEventDto {
   @Optional()
   readonly imageUrl: string;
 
-  @ApiProperty({ example: "<mongoose _id>", description: "Unit ID" })
+  @ApiProperty({ example: "<mongoose _id> ![For update use update status route]", description: "Unit ID" })
   @IsNotEmpty({ message: "An Event should belonge to at least one unit."})
   readonly unitId: string;
 }
