@@ -30,7 +30,7 @@ import { AdminService } from 'src/admin/admin.service';
       { name: "Event", schema: EventSchema},
       { name: "Participant", schema: ParticipantSchema },
       { name: "EventUnit", schema: EventUnitSchema },
-      { name: "Organizer", schema: OrganizerSchema }
+      { name: "Organizer", schema: OrganizerSchema },
     ]),
     UnitModule,
     UnitMemberModule,
