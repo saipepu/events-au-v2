@@ -49,6 +49,22 @@ export class OrganizerService {
     return { success: true, message: organizer }
   }
 
+  // Get Organizer by User Id
+  async findByUserId(userId: string) {
+      
+      if(!mongoose.isValidObjectId(userId)) {
+        throw new NotAcceptableException({ success: false, error: "Organizer Id is invalid."})
+      }
+  
+      const organizer = await this.organizerModel.find({ userId: userId }).populate(['userId','eventId']).exec();
+  
+      if(!organizer) {
+        throw new NotFoundException({ success: false, error: "Organizer not found."})
+      }
+  
+      return { success: true, message: organizer }
+  }
+
   // Create Organizer
   async create(body: CreateOrgDto) {
 
