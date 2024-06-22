@@ -7,6 +7,7 @@ export class UpdateEventStatusDto {
   @IsEmpty({ message: "You cannot pass organizer id." })
   readonly organizer: Organizer;
 
+  @ApiProperty({ example: Object, description: 'Status of the event.' })
   @IsNotEmpty({ message: "Status cannot be empty." })
   readonly status: Status;
 
