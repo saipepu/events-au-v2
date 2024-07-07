@@ -44,6 +44,7 @@ export class UserController {
     return this.userService.findById(id)
   }
 
+  // Don't need this, because we can get user from Firebase
   // // Create User
   // @Put('user/:id')
   // @ApiOperation({ summary: 'Create new user' })
@@ -92,12 +93,13 @@ export class UserController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth('bearer-token')
   @ApiBody({ type: CreateEventDto })
-  @ApiResponse({ status: 201, description: 'Event created', schema: resCreateEventSuccessDto })
+  @ApiResponse({ status: 201, description: 'Event created. After passing the validation middleware, we can create the event with the Id that we get from the request token. That is why there is no need to pass user id for who create this event. The id from the requested token will be used.', schema: resCreateEventSuccessDto })
   async createEvent(
     @Body()
     body: CreateEventDto,
     @Req() req
   ) {
+    // after passing the validation middleware, we can create the event with the Id that we get from the request token
     return this.eventService.create(body, req.user)
   }
 
