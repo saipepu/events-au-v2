@@ -58,9 +58,9 @@ export class EventController {
     return this.eventUnitService.findByUnitId(unitId)
   }
 
-  // Find Event by User Id
+  // Find Event by Participant Id
   @Get('events/participant/:id')
-  @ApiOperation({ summary: 'Find all events for a participant', description: 'Have to pass userId of the participant'})
+  @ApiOperation({ summary: 'Find all events for a participant', description: 'Have to pass userId of the participant with userId'})
   @ApiResponse({ status: 200, description: 'Event found', schema: resGetByUserIdDto })
   async findByUserId(
     @Param('id')
@@ -71,7 +71,7 @@ export class EventController {
 
   // Find Eventy by Organizer Id
   @Get('events/organizer/:id')
-  @ApiOperation({ summary: 'Find all events for an organizer', description: 'Have to pass userId of the organizer'})
+  @ApiOperation({ summary: 'Find all events for an organizer', description: 'Have to pass userId of the organizer with userId'})
   @ApiResponse({ status: 200, description: 'Event found', schema: resGetByOrganizerIdDto })
   async findByOrganizerId(
     @Param('id')

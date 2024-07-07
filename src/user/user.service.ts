@@ -35,11 +35,21 @@ export class UserService {
     try {
       const user = await this.userModel.findById(id);
 
+      const organizer = await this.organizerService.findAll({ userId: id });
+
+      console.log(organizer)
+
+      let dto = {
+        ...user.toObject(),
+        isOrganizer: organizer?.message.length > 0 ? true : false,
+      }
+
       if (user) {
-        return { success: true, message: user };
+        return { success: true, message: dto};
       } else {
         throw new NotFoundException('User with this ID does not exist.');
       }
+
     } catch (err) {
       throw new NotFoundException({ success: false, error: err });
     }
