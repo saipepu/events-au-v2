@@ -15,6 +15,8 @@ import { PollService } from 'src/poll/poll.service';
 import { CreatePollDto } from 'src/poll/dto/create-poll.dto';
 import { create } from 'domain';
 import { DeletePollDto } from 'src/poll/dto/delete-poll.dts';
+import { CreatePollResultDto } from 'src/poll-result/dto/create-poll-result.dto';
+import { PollResultService } from 'src/poll-result/poll-result.service';
 
 @ApiTags('user')
 @ApiExtraModels(User, CreateEventDto, CreateParticipantDto, UpdateUserDto)
@@ -25,6 +27,7 @@ export class UserController {
     private eventService: EventService,
     private unitMemberService: UnitMemberService,
     private pollService: PollService,
+    private pollResultService: PollResultService
   ) {}
 
   // Get All Users
@@ -148,7 +151,23 @@ export class UserController {
   ) {
     return this.pollService.delete(deletePollDto.pollId, req.user);
   }
+
+  // Create Poll
+  @Post('user/poll/result')
+  @ApiOperation({ summary: 'Submit poll result' })
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiBody({ type: CreatePollResultDto })
+  @ApiResponse({ status: 201, description: 'Poll Result created'})
+  async createPollResult(
+    @Body() createPollResultDto: CreatePollResultDto,
+    @Req() req
+  ) {
+    return this.pollResultService.create(createPollResultDto, req.user)
+  }
 }
+
+
 
   // Let user join new Unit
   // @Post('user/join/unit/:id')
