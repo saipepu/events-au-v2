@@ -30,6 +30,8 @@ import { UnitService } from 'src/unit/unit.service';
 import { PollSchema } from 'src/poll/schema/poll.schema';
 import { PollModule } from 'src/poll/poll.module';
 import { PollService } from 'src/poll/poll.service';
+import { PollResultModule } from 'src/poll-result/poll-result.module';
+import { PollResultService } from 'src/poll-result/poll-result.service';
 
 @Module({
   imports: [
@@ -50,6 +52,7 @@ import { PollService } from 'src/poll/poll.service';
     UnitMemberModule,
     UnitModule,
     PollModule,
+    PollResultModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
