@@ -49,4 +49,13 @@ export class ParticipantController {
     return this.participantService.leaveEvent(eventId, req.user)
   }
 
+  @Get('participant/:id')
+  @ApiOperation({ summary: 'Getting Participant by ID' })
+  @ApiResponse({ status: 200, description: 'Get participant by ID', schema: resGetParticipantByIdDto })
+  async findByIdAndEventId(
+    @Param('id')
+    participantId: string
+  ) {
+    return this.participantService.findByIdWithDetails(participantId)
+  }
 }

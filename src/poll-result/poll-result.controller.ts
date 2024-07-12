@@ -13,7 +13,7 @@ export class PollResultController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.pollResultService.findOne(+id);
+    return this.pollResultService.findOne(id);
   }
 
 }
