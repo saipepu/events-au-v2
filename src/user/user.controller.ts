@@ -1,7 +1,7 @@
 import { resCreateEventSuccessDto, resGetAllDto, resGetByIdDto, resJoinEventDto, resJoinUnitDto } from './dto/userResponse.dto';
 import { UnitMemberService } from './../unit-member/unit-member.service';
 import { ParticipantService } from './../participant/participant.service';
-import { Body, Controller, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Query as QueryExpress } from 'express-serve-static-core'
 import { User } from './schema/user.schema';
@@ -11,6 +11,12 @@ import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { EventService } from 'src/event/event.service';
 import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PollService } from 'src/poll/poll.service';
+import { CreatePollDto } from 'src/poll/dto/create-poll.dto';
+import { create } from 'domain';
+import { DeletePollDto } from 'src/poll/dto/delete-poll.dts';
+import { CreatePollResultDto } from 'src/poll-result/dto/create-poll-result.dto';
+import { PollResultService } from 'src/poll-result/poll-result.service';
 
 @ApiTags('user')
 @ApiExtraModels(User, CreateEventDto, CreateParticipantDto, UpdateUserDto)
@@ -19,7 +25,9 @@ export class UserController {
   constructor(
     private userService: UserService,
     private eventService: EventService,
-    private unitMemberService: UnitMemberService
+    private unitMemberService: UnitMemberService,
+    private pollService: PollService,
+    private pollResultService: PollResultService
   ) {}
 
   // Get All Users
@@ -118,6 +126,51 @@ export class UserController {
 
   }
 
+  // Create Poll
+  @Post('user/create/poll')
+  @ApiOperation({ summary: 'Create new poll' })
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiBody({ type: CreatePollDto })
+  @ApiResponse({ status: 201, description: 'Poll created'})
+  async createPoll(
+    @Body() createPollDto: CreatePollDto,
+    @Req() req
+  ) {
+    return this.pollService.create(createPollDto, req.user)
+  }
+
+  // Delete Poll
+  @Delete('user/delete/poll')
+  @ApiOperation({ summary: 'Delete a poll' })
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiBody({ type: DeletePollDto })
+  @ApiResponse({ status: 200, description: 'Poll deleted successfully' })
+  async deletePoll(
+    @Body() deletePollDto: DeletePollDto,
+    @Req() req
+  ) {
+    return this.pollService.delete(deletePollDto.pollId, req.user);
+  }
+
+  // Create Poll
+  @Post('user/poll/result')
+  @ApiOperation({ summary: 'Submit poll result' })
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiBody({ type: CreatePollResultDto })
+  @ApiResponse({ status: 201, description: 'Poll Result created'})
+  async createPollResult(
+    @Body() createPollResultDto: CreatePollResultDto,
+    @Req() req
+  ) {
+    return this.pollResultService.create(createPollResultDto, req.user)
+  }
+}
+
+
+
   // Let user join new Unit
   // @Post('user/join/unit/:id')
   // @UseGuards(AuthGuard())
@@ -130,4 +183,3 @@ export class UserController {
   // ) {
   //   return this.userService.joinUnit(unitId, req.user)
   // }
-}
