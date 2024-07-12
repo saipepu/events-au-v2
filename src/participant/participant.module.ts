@@ -10,6 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import { OrganizerModule } from 'src/organizer/organizer.module';
 import { MailService } from 'src/common/mail/mail.service';
 import { EventModule } from 'src/event/event.module';
+import { PollService } from 'src/poll/poll.service';
+import { PollResultService } from 'src/poll-result/poll-result.service';
+import { PollModule } from 'src/poll/poll.module';
+import { PollResultModule } from 'src/poll-result/poll-result.module';
 
 @Module({
   imports: [
@@ -29,7 +33,9 @@ import { EventModule } from 'src/event/event.module';
       }
     }),
     forwardRef(() => OrganizerModule),
-    forwardRef(() => EventModule) //<--- 
+    forwardRef(() => EventModule),
+    forwardRef(() => PollModule),
+    forwardRef(() => PollResultModule),
   ],
   controllers: [ParticipantController],
   providers: [ParticipantService, MailService],

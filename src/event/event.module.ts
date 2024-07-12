@@ -18,29 +18,44 @@ import { EventUnitModule } from 'src/event-unit/event-unit.module';
 import { UnitModule } from 'src/unit/unit.module';
 import { UserModule } from 'src/user/user.module';
 import { MailService } from 'src/common/mail/mail.service';
-import { UnitAdminModule } from 'src/unit-admin/unit-admin.module'; 
+import { UnitAdminModule } from 'src/unit-admin/unit-admin.module';
 import { UserService } from 'src/user/user.service';
 import { UnitMemberModule } from 'src/unit-member/unit-member.module';
 import { UnitMemberService } from 'src/unit-member/unit-member.service';
 import { AdminService } from 'src/admin/admin.service';
+import { PollService } from 'src/poll/poll.service';
+import { PollResultService } from 'src/poll-result/poll-result.service';
+import { PollResultModule } from 'src/poll-result/poll-result.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: "Event", schema: EventSchema},
-      { name: "Participant", schema: ParticipantSchema },
-      { name: "EventUnit", schema: EventUnitSchema },
-      { name: "Organizer", schema: OrganizerSchema }
+      { name: 'Event', schema: EventSchema },
+      { name: 'Participant', schema: ParticipantSchema },
+      { name: 'EventUnit', schema: EventUnitSchema },
+      { name: 'Organizer', schema: OrganizerSchema },
     ]),
     UnitModule,
     UnitMemberModule,
     forwardRef(() => UserModule),
     UnitAdminModule,
-  forwardRef(() => ParticipantModule),
-  forwardRef(() => OrganizerModule),
-    ],
+    forwardRef(() => ParticipantModule),
+    forwardRef(() => OrganizerModule),
+    forwardRef(() => PollResultModule),
+  ],
   controllers: [EventController],
-  providers: [EventService, OrganizerService, ParticipantService, EventUnitService, MailService, UserService, UnitMemberService, AdminService],
-  exports: [EventService]
+  providers: [
+    EventService,
+    OrganizerService,
+    ParticipantService,
+    EventUnitService,
+    MailService,
+    UserService,
+    UnitMemberService,
+    AdminService,
+    PollService,
+    PollResultService,
+  ],
+  exports: [EventService],
 })
 export class EventModule {}

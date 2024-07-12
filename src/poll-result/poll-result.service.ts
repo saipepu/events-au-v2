@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreatePollResultDto } from './dto/create-poll-result.dto';
 import { User } from 'src/user/schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -28,11 +28,37 @@ export class PollResultService {
     }
   }
 
-  findAll() {
-    return `This action returns all pollResult`;
+  async findAll() {
+    const pollResult = await this.pollResultModel.find().populate('userId').exec()
+
+    return { success: true, message: pollResult };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pollResult`;
+  findOne(id: string) {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new NotAcceptableException('Poll Result Id is invalid.');
+    }
+
+    const pollResult = this.pollResultModel.findById(id);
+
+    if (!pollResult) {
+      throw new NotFoundException('Poll Result not found.');
+    }
+
+    return pollResult
   }
+
+  async findByPollId(pollId: string) {
+    if (!mongoose.isValidObjectId(pollId)) {
+      throw new NotAcceptableException('Poll Id is invalid.');
+    }
+
+    const pollResults = await this.pollResultModel.find({ pollId }).populate('userId').exec();
+    if (!pollResults || pollResults.length === 0) {
+      throw new NotFoundException('Poll Results not found.');
+    }
+
+    return { success: true, message: pollResults };
+  }
+
 }

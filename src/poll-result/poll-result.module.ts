@@ -11,6 +11,7 @@ import { UnitMemberModule } from 'src/unit-member/unit-member.module';
 import { MailModule } from 'src/common/mail/mail.module';
 import { OrganizerModule } from 'src/organizer/organizer.module';
 import { AdminModule } from 'src/admin/admin.module';
+import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [
@@ -19,14 +20,15 @@ import { AdminModule } from 'src/admin/admin.module';
       schema: PollResultSchema
     }]),
     forwardRef(() => UserModule),
-    ParticipantModule,
+    forwardRef(() => ParticipantModule),
     UnitMemberModule,
     MailModule,
-    OrganizerModule,
+    forwardRef(() => OrganizerModule),
+    forwardRef(() => EventModule),
     AdminModule,
   ],
   controllers: [PollResultController],
   providers: [PollResultService, UserService],
-  exports: [PollResultService]
+  exports: [PollResultService, MongooseModule]
 })
 export class PollResultModule {}
