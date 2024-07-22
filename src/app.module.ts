@@ -31,6 +31,8 @@ import { join } from 'path';
 import { MailModule } from './common/mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { PollModule } from './poll/poll.module';
+import { PollResultModule } from './poll-result/poll-result.module';
 
 @Module({
   imports: [
@@ -96,7 +98,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       exclude: ['/api*']
-    })
+    }),
+    PollModule,
+    PollResultModule
   ],
   controllers: [AppController],
   providers: [AppService],

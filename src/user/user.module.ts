@@ -27,6 +27,11 @@ import { AdminSchema } from 'src/admin/schema/admin.schema';
 import { UnitMemberService } from 'src/unit-member/unit-member.service';
 import { AdminService } from 'src/admin/admin.service';
 import { UnitService } from 'src/unit/unit.service';
+import { PollSchema } from 'src/poll/schema/poll.schema';
+import { PollModule } from 'src/poll/poll.module';
+import { PollService } from 'src/poll/poll.service';
+import { PollResultModule } from 'src/poll-result/poll-result.module';
+import { PollResultService } from 'src/poll-result/poll-result.service';
 
 @Module({
   imports: [
@@ -39,12 +44,15 @@ import { UnitService } from 'src/unit/unit.service';
       { name: "UnitAdmin", schema: UnitAdminSchema },
       { name: "Unit", schema: UnitSchema},
       { name: "UnitMember", schema: UnitMemberSchema },
-      { name: "Admin", schema: AdminSchema }
+      { name: "Admin", schema: AdminSchema },
+      { name: 'Poll', schema: PollSchema },
     ]),
     EventModule,
     AuthModule,
     UnitMemberModule,
     UnitModule,
+    PollModule,
+    PollResultModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -59,7 +67,7 @@ import { UnitService } from 'src/unit/unit.service';
     })
   ],
   controllers: [UserController],
-  providers: [UserService, ParticipantService, MailService, EventService, OrganizerService, EventUnitService, EventService, UnitAdminService, UnitMemberService, AdminService, UnitService],
+  providers: [UserService, ParticipantService, PollService, MailService, EventService, OrganizerService, EventUnitService, EventService, UnitAdminService, UnitMemberService, AdminService, UnitService],
   exports: [UserService, MongooseModule]
 })
 export class UserModule {}
