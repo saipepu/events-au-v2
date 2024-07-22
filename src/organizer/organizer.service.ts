@@ -12,6 +12,7 @@ import { updateEventUnitDto } from 'src/event-unit/dto/update-event-unit.dto';
 import { stat } from 'fs';
 import { MailService } from 'src/common/mail/mail.service';
 import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class OrganizerService {
@@ -23,6 +24,8 @@ export class OrganizerService {
     private eventUnitService: EventUnitService,
     private mailService: MailService,
     private unitAdminService: UnitAdminService,
+    @Inject(forwardRef(() => UserService)) //<--- 
+    private userService: UserService
   ) {}
 
   // Get All Organizers
@@ -151,11 +154,11 @@ export class OrganizerService {
             if(success) {
               let r = { unitId: units[i], success: true, message: "Added successfully."}
               result.push(r)
-            }
 
-            console.log("unitId: ", units[i])
-            let unitAdmin = await this.unitAdminService.findByUnitId(units[i])
-            console.log("unitAdmin : ", unitAdmin.message)
+              let unitAdmin = await this.unitAdminService.findByUnitId(units[i]);
+              let userEmail = unitAdmin.message[0].adminId.userId.email;
+              await this.mailService.sendEventUnitUpdateNotification(userEmail, action, units[i], eventId);
+            }
   
           }
 
@@ -170,6 +173,10 @@ export class OrganizerService {
             if(success) {
               let r = { unitId: units[i], success: true, message: "Remove successfully."}
               result.push(r)
+                          // Fetch the unit admin's email and send a notification
+              let unitAdmin = await this.unitAdminService.findByUnitId(units[i]);
+              let userEmail = unitAdmin.message[0].adminId.userId.email;
+              await this.mailService.sendEventUnitUpdateNotification(userEmail, action, units[i], eventId);
             }
             
           } else {

@@ -17,7 +17,7 @@ import { UnitAdminService } from 'src/unit-admin/unit-admin.service';
       { name: 'Admin', schema: AdminSchema},
       { name: 'UnitAdmin', schema: AdminSchema }
     ]),
-    EventModule,
+    forwardRef(() => EventModule),
     UnitAdminModule,
     forwardRef(() => UserModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),

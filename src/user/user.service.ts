@@ -3,6 +3,8 @@ import { UnitService } from 'src/unit/unit.service';
 import { User } from './schema/user.schema';
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,8 +22,10 @@ export class UserService {
     @InjectModel(User.name)
     private userModel: mongoose.Model<User>,
     private participantService: ParticipantService,
+    @Inject(forwardRef(() => UnitMemberService)) //<--- 
     private unitMemberService: UnitMemberService,
     private mailService: MailService,
+    @Inject(forwardRef(() => OrganizerService)) //<---
     private organizerService: OrganizerService,
   ) {}
 
