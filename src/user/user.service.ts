@@ -73,6 +73,12 @@ export class UserService {
 
   async joinEvent(eventId: string, user: User) {
     try {
+
+      const _ = await this.participantService.findAll({ eventId, userId: user._id });
+      if (_.message.length > 0) {
+        throw new BadRequestException('User is already a participant of this event.');
+      }
+
       let dto: CreateParticipantDto = {
         eventId: eventId,
         userId: user._id,
@@ -98,7 +104,7 @@ export class UserService {
       }
       return this.participantService.create(dto);
     } catch (err) {
-      throw new BadRequestException({ success: false, error: err });
+      return { success: false, error: err.response };
     }
   }
 
