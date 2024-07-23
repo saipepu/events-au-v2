@@ -13,6 +13,11 @@ export class UpdateUserDto {
   @IsOptional()
   readonly lastName: string;
 
+  @ApiProperty({ example: "User Phone", description: "Phone Number of the user" })
+  @IsString()
+  @IsOptional()
+  readonly phone: string;
+
   @ApiProperty({ example: "testing@gmail.com", description: "Email of the user" })
   @IsString()
   @IsEmail()

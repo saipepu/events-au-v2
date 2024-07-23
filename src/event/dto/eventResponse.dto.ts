@@ -1,6 +1,8 @@
 import { getSchemaPath } from "@nestjs/swagger";
 import { Event } from "../schema/event.schema";
 import { User } from "src/user/schema/user.schema";
+import { Participant } from "src/participant/schema/participant.schema";
+import { Organizer } from "src/organizer/schema/organizer.schema";
 
 export const resGetAllDto = {
   type: 'object',
@@ -21,7 +23,46 @@ export const resGetByIdDto = {
     success: { type: 'boolean' },
     message: {
       type: 'string',
-      $ref: getSchemaPath(User)
+      $ref: getSchemaPath(Event)
+    }
+  }
+}
+
+export const resGetByUserIdDto = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean' },
+    message: {
+      type: 'array',
+      items: {
+        $ref: getSchemaPath(Participant)
+      }
+    }
+  }
+}
+
+export const resGetByUnitIdDto = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean' },
+    message: {
+      type: 'array',
+      items: {
+        $ref: getSchemaPath(Event)
+      }
+    }
+  }
+}
+
+export const resGetByOrganizerIdDto = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean' },
+    message: {
+      type: 'array',
+      items: {
+        $ref: getSchemaPath(Organizer)
+      }
     }
   }
 }
