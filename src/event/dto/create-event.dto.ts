@@ -41,7 +41,7 @@ export class CreateEventDto {
 
   @ApiProperty({ example: "https://www.image.com", description: "Image URL of the event" })
   @IsOptional()
-  readonly imageUrl: string;
+  readonly coverImageUrl: string;
 
   @ApiProperty({ example: "<mongoose _id> ![For update use update status route]", description: "Unit ID" })
   @IsNotEmpty({ message: "An Event should belonge to at least one unit."})

@@ -50,7 +50,7 @@ export class Event extends Document {
 
   @ApiProperty({ example: "Event cover image URL", description: "Cover image URL of the event" })
   @Prop()
-  coverImageUrL: string;
+  coverImageUrl: string;
 
   @ApiProperty({ example: "<mongoose _id>", description: "Admin ID" })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
