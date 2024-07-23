@@ -81,20 +81,25 @@ export class ParticipantService {
     return { success: true, message: participant }
   }
 
-  // Find Participant by Event Id
-  async findByEventId(eventId: string) {
-    try {
-      const participants = await this.participantModel
-        .find({ eventId: eventId })
-        .populate(['userId', 'eventId'])
-        .exec();
+// Find Participant by Event Id
+async findByEventId(eventId: string) {
+  try {
+    const participants = await this.participantModel
+      .find({ eventId: eventId })
+      .populate(['userId', 'eventId'])
+      .exec();
+      
+    const detailedParticipants = await Promise.all(
+      participants.map(async (participant) => {
+        return await this.findByIdWithDetails(participant._id.toString());
+      })
+    );
 
-      return { success: true, message: participants };
-    } catch (err) {
-      throw new BadRequestException({ success: false, error: err });
-    }
+    return { success: true, message: detailedParticipants };
+  } catch (err) {
+    throw new BadRequestException({ success: false, error: err });
   }
-
+}
   // Create Participant
   async create(body: CreateParticipantDto) {
     try {
@@ -272,6 +277,7 @@ export class ParticipantService {
       return {
         success: true,
         message: {
+          id: participant._id,
           name: participant.userId.firstName,
           email: participant.userId.email,
           phone: participant.userId.phone,
