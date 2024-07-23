@@ -40,6 +40,8 @@ export class Participant extends Document {
   @ApiProperty({ example: "123456789", description: "Phone Number" })
   @Prop()
   phone: number;
+
+  // nickname, lineId, [poll_result]
 }
 
 export const ParticipantSchema = SchemaFactory.createForClass(Participant)

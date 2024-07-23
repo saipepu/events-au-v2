@@ -30,10 +30,10 @@ import { PollResultModule } from 'src/poll-result/poll-result.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Event', schema: EventSchema },
-      { name: 'Participant', schema: ParticipantSchema },
-      { name: 'EventUnit', schema: EventUnitSchema },
-      { name: 'Organizer', schema: OrganizerSchema },
+      { name: "Event", schema: EventSchema},
+      { name: "Participant", schema: ParticipantSchema },
+      { name: "EventUnit", schema: EventUnitSchema },
+      { name: "Organizer", schema: OrganizerSchema },
     ]),
     UnitModule,
     UnitMemberModule,

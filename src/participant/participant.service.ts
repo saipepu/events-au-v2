@@ -65,6 +65,22 @@ export class ParticipantService {
     return { success: true, message: participant };
   }
 
+  // Find Participant by User Id
+  async findByUserId(userId: string) {
+
+    if(!mongoose.isValidObjectId(userId)) {
+      throw new NotAcceptableException({ success: false, error: "Participant Id is invalid."})
+    }
+
+    const participant = await this.participantModel.find({ userId: userId }).populate(['userId','eventId']).exec();
+
+    if(!participant) {
+      throw new NotFoundException({ success: false, error: "Participant not found."})
+    }
+
+    return { success: true, message: participant }
+  }
+
   // Find Participant by Event Id
   async findByEventId(eventId: string) {
     try {
