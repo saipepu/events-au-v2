@@ -54,9 +54,6 @@ export class PollResultService {
     }
 
     const pollResults = await this.pollResultModel.find({ pollId }).populate('userId').exec();
-    if (!pollResults || pollResults.length === 0) {
-      throw new NotFoundException('Poll Results not found.');
-    }
 
     return { success: true, message: pollResults };
   }
