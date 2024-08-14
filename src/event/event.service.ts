@@ -99,7 +99,7 @@ export class EventService {
         if (success && message.length > 0) {
           const adminEmails = [];
           for (const obj of message) {
-            const adminDetails = await this.userService.findById(obj.adminId.userId.toString());
+            const adminDetails = await this.userService.findById(obj.adminId.userId._id.toString());
             if (adminDetails.success) {
               adminEmails.push(adminDetails.message.email);
             }
