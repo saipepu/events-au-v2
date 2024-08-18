@@ -80,8 +80,7 @@ export class EventService {
         // create new organizer
         let orgDto = {
           userId: u.message._id,
-          eventId: event._id,
-          status: 'organizing',
+          eventId: event._id
         };
         const org = await this.organizerService.create(orgDto);
 
