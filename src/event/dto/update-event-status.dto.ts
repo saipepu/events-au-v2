@@ -3,11 +3,12 @@ import { Organizer } from "src/organizer/schema/organizer.schema";
 import { Status } from "../schema/event.schema";
 import { ApiProperty } from "@nestjs/swagger";
 
+
 export class UpdateEventStatusDto {
   @IsEmpty({ message: "You cannot pass organizer id." })
   readonly organizer: Organizer;
 
-  @ApiProperty({ example: 'accepted | rejected', description: 'Status of the event.' })
+  @ApiProperty({ example: `${Object.values(Status).join(' | ')}`, description: 'Status of the event. Admin can only approved or rejected' })
   @IsNotEmpty({ message: "Status cannot be empty." })
   readonly status: Status;
 
