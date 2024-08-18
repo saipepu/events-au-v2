@@ -69,7 +69,7 @@ export class EventController {
     return this.participantService.findByUserId(userId)
   }
 
-  // Find Eventy by Organizer Id
+  // Find Event by Organizer Id
   @Get('events/organizer/:id')
   @ApiOperation({ summary: 'Find all events for an organizer by userId', description: 'Have to pass userId of the organizer'})
   @ApiResponse({ status: 200, description: 'Event found', schema: resGetByOrganizerIdDto })

@@ -11,9 +11,4 @@ export class CreateOrgDto {
   @IsNotEmpty()
   @IsString()
   readonly eventId: string;
-
-  @ApiProperty({ example: 'pending', description: 'Status' })
-  @IsEmpty()
-  @IsString()
-  readonly status: string;
 }

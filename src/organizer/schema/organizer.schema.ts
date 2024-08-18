@@ -20,10 +20,6 @@ export class Organizer extends Document {
   @ApiProperty({ example: '<eventId>', description: 'Event ID' })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Event" })
   eventId: Event;
-  
-  @ApiProperty({ example: 'organizing', description: 'Status [ORGANIZING, ORGANIZED]' })
-  @Prop()
-  status: Status;
 }
 
 export const OrganizerSchema = SchemaFactory.createForClass(Organizer)

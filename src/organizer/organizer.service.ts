@@ -56,7 +56,7 @@ export class OrganizerService {
   async findByUserId(userId: string) {
       
       if(!mongoose.isValidObjectId(userId)) {
-        throw new NotAcceptableException({ success: false, error: "Organizer Id is invalid."})
+        throw new NotAcceptableException({ success: false, error: "User Id is invalid."})
       }
   
       const organizer = await this.organizerModel.find({ userId: userId }).populate(['userId','eventId']).exec();
