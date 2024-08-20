@@ -91,7 +91,7 @@ async findByEventId(eventId: string) {
       
     const detailedParticipants = await Promise.all(
       participants.map(async (participant) => {
-        return await this.findByIdWithDetails(participant._id.toString());
+        return (await this.findByIdWithDetails(participant._id.toString())).message;
       })
     );
 
@@ -248,7 +248,6 @@ async findByEventId(eventId: string) {
         error: 'Participant not found.',
       });
     }
-    console.log('Participant: ', participant);
 
     try {
       const userId = participant.userId._id;
