@@ -277,10 +277,7 @@ async findByEventId(eventId: string) {
       return {
         success: true,
         message: {
-          id: participant._id,
-          name: participant.userId.firstName,
-          email: participant.userId.email,
-          phone: participant.userId.phone,
+          ...participant
           // nickname: participant.userId.nickname,
           // lineId: participant.userId.lineId,
           // resultsList,
