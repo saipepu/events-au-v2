@@ -283,7 +283,7 @@ async findByEventId(eventId: string) {
           phone: participant.userId.phone,
           // nickname: participant.userId.nickname,
           // lineId: participant.userId.lineId,
-          resultsList,
+          // resultsList,
         },
       };
     } catch (error) {
