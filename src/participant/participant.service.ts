@@ -274,10 +274,11 @@ async findByEventId(eventId: string) {
         }
       }
 
+      console.log(participant.toObject(), "Results List:");
       return {
         success: true,
         message: {
-          ...participant
+          ...participant.toObject()
           // nickname: participant.userId.nickname,
           // lineId: participant.userId.lineId,
           // resultsList,
