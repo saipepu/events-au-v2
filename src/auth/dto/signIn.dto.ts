@@ -1,9 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class SignInDto {
-  @ApiProperty({ example: '<firebase id>', description: 'Firebase Id obtained from Google Auth' })
+  @ApiProperty({ example: 'password', description: 'Password' })
   @IsNotEmpty()
   @IsString()
-  readonly fId: string
+  readonly password: string
+
+  @ApiProperty({ example: 'email', description: 'Email' })
+  @IsNotEmpty()
+  @IsEmail({}, { message: 'Please enter correct email.'})
+  readonly email: string
 }
