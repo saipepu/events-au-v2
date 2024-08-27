@@ -12,7 +12,7 @@ import { SignOutDto } from './dto/signOut.dto';
 import { Admin } from 'src/admin/schema/admin.schema';
 import { CreateAdminDto } from 'src/admin/dto/create.admin.dto';
 import { UnitMemberService } from 'src/unit-member/unit-member.service';
-
+import * as bcrypt from 'bcrypt';
 export interface SignUpResponse {
   success: boolean;
   message?: { user: User, admin: Admin } | User;
@@ -34,11 +34,10 @@ export class AuthService {
 
   async signUp({ isAdmin, body } : { isAdmin: boolean, body: SignUpDto }): Promise<SignUpResponse> {
 
-    const user = await this.userModel.findOne({ fId: body.fId })
+    // Check if user already exist
+    const user = await this.userModel.findOne({ email: body.email })
     if(user) {
-
       throw new BadRequestException({ success: false, error: 'User already exist. Please login.'})
-
     }
 
     if(isAdmin && body?.unitId == undefined) {
@@ -56,7 +55,9 @@ export class AuthService {
 
     try {
 
-      const res = await this.userModel.create(body)
+      const hashedPassword = await bcrypt.hash(body.password, 10)
+
+      const res = await this.userModel.create({ ...body, hashedPassword})
 
       if(isAdmin) {
 
@@ -84,17 +85,25 @@ export class AuthService {
 
   async signIn(body: SignInDto) {
 
-    const user = await this.userModel.findOne({ fId: body.fId })
+    const user = await this.userModel.findOne({ email: body.email })
     if(!user) {
       throw new NotFoundException({ success: false, error: 'User not found.Please signup first.'})
     }
 
     try {
+
+      const isMatch = await bcrypt.compare(body.password, user.hashedPassword)
+      console.log(isMatch)
+
+      if(!isMatch) {
+        throw new BadRequestException('Invalid password.')
+      }
       
       const token = this.jwtService.sign({ id: user._id })
       return { success: true, message: { token, user } }
+
     } catch(err) {
-      return { success: false, error: err.errmsg ? err.errmsg : err.message }
+      return { success: false, error: err.response ? err.response.message : err }
     }
 
   }
@@ -114,4 +123,5 @@ export class AuthService {
   async protected() {
     return "Authenticated!"
   }
+
 }

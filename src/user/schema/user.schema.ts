@@ -12,10 +12,6 @@ export enum Gender {
   timestamps: true
 })
 export class User extends Document {
-  @ApiProperty({ example: '<firebase id>', description: 'Firebase Id obtained from Google Auth' })
-  @Prop({ required: [true, "Firebase user id is required!"], unique: [true, "Duplicate firebase user id."]})
-  fId: string; // fId -> firebaseId
-
   @ApiProperty({ example: 'Updated', description: 'Updated' })
   @Prop({ required: [true, "First name is required!"] })
   firstName: string;
@@ -43,6 +39,10 @@ export class User extends Document {
   @ApiProperty({ example: 'false', description: 'Is Admin Boolean Value'})
   @Prop()
   isAdmin: boolean;
+
+  @ApiProperty({ description: 'Hashed password. We do not store the real password.' })
+  @Prop()
+  hashedPassword: string;
   
 }
 

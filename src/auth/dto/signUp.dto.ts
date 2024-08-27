@@ -17,13 +17,13 @@ export class SignUpDto {
   @IsNumber({}, { message: 'Phone number must be a number.'})
   readonly phone: number
 
-  @ApiProperty({ example: '<firebase id>', description: 'Firebase Id obtained from Google Auth' })
-  @IsNotEmpty()
-  @IsString()
-  readonly fId: string
-
   @ApiProperty({ example: '<mongoose _id>', description: 'Unit ID' })
   @IsOptional()
   @IsString()
   readonly unitId: string
+
+  @ApiProperty({ example: 'password', description: 'Password' })
+  @IsNotEmpty()
+  @IsString()
+  readonly password: string
 }
