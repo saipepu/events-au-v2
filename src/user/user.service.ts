@@ -30,38 +30,31 @@ export class UserService {
   ) {}
 
   async findAll(query: Query) {
-    const users = await this.userModel.find(query);
+    const users = await this.userModel.find({ ...query, isDeleted: false });
 
     return { success: true, message: users };
   }
 
   async findById(id: string) {
     try {
-      const user = await this.userModel.findById(id);
+      const user = await this.userModel.findOne({ _id: id, isDeleted: false });
+      if(!user) throw new NotFoundException('User does not exist. (deleted or not found)');
 
       const organizer = await this.organizerService.findAll({ userId: id });
-
-      console.log(organizer)
-
       let dto = {
         ...user.toObject(),
         isOrganizer: organizer?.message.length > 0 ? true : false,
       }
-
-      if (user) {
-        return { success: true, message: dto};
-      } else {
-        throw new NotFoundException('User with this ID does not exist.');
-      }
+      return { success: true, message: dto};
 
     } catch (err) {
-      throw new NotFoundException({ success: false, error: err });
+      throw new NotFoundException({ success: false, error: err.response.message });
     }
   }
 
   async update(id: string, body: any) {
     try {
-      const user = await this.userModel.findByIdAndUpdate(id, body, {
+      const user = await this.userModel.findOneAndUpdate({ _id: id, isDeleted: false }, body, {
         new: true,
         runValidators: true,
       });
@@ -120,4 +113,23 @@ export class UserService {
       throw new BadRequestException({ success: false, error: err });
     }
   }
+
+  async softDelete(id: string) {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date() }, { new: true });
+      return { success: true, message: "Soft Delete User Successful." };
+    } catch (err) {
+      throw new BadRequestException({ success: false, error: err });
+    }
+  }
+
+  async recover(id: string) {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(id, { isDeleted: false, deletedAt: null }, { new: true });
+      return { success: true, message: "Recover User Successful." };
+    } catch (err) {
+      throw new BadRequestException({ success: false, error: err });
+    }
+  }
+
 }
