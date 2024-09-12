@@ -51,25 +51,8 @@ export class UserController {
   ) {
     return this.userService.findById(id)
   }
-
-  // Don't need this, because we can get user from Firebase
-  // // Create User
-  // @Put('user/:id')
-  // @ApiOperation({ summary: 'Create new user' })
-  // @UseGuards(AuthGuard())
-  // @ApiBearerAuth('bearer-token')
-  // @ApiResponse({ status: 200, description: 'User updated', schema: resGetByIdDto })
-  // async update(
-  //   @Param('id')
-  //   id: string,
-  //   @Body()
-  //   body: UpdateUserDto
-  // ) {
-  //   return this.userService.update(id, body)
-  // }
   
   // Get All Users in a Unit
- 
   @Get('users/unit/:id')
   @ApiOperation({ summary: 'Find all users in a unit' })
   @ApiResponse({ status: 200, description: 'Users found (can be empty)', schema: resGetAllDto })
@@ -167,6 +150,29 @@ export class UserController {
   ) {
     return this.pollResultService.create(createPollResultDto, req.user)
   }
+
+  @Delete('user/:id/soft-delete')
+  @ApiOperation({ summary: 'Soft Delete user' })
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth('bearer-token')
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  async softDelete(
+    @Param('id')
+    id: string
+  ) {
+    return this.userService.softDelete(id);
+  }
+
+  @Post('user/:id/recover')
+  @ApiOperation({ summary: 'Recover user' })
+  @ApiResponse({ status: 200, description: 'User recovered successfully' })
+  async recover(
+    @Param('id')
+    id: string
+  ) {
+    return this.userService.recover(id);
+  }
+
 }
 
 
