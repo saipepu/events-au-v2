@@ -59,13 +59,29 @@ export class OrganizerService {
         throw new NotAcceptableException({ success: false, error: "User Id is invalid."})
       }
   
-      const organizer = await this.organizerModel.find({ userId: userId }).populate(['userId','eventId']).exec();
+      const organizers = await this.organizerModel.find({ userId: userId }).populate(['userId','eventId']).exec();
   
-      if(!organizer) {
+      if(organizers.length == 0) {
         throw new NotFoundException({ success: false, error: "Organizer not found."})
       }
   
-      return { success: true, message: organizer }
+      return { success: true, message: organizers }
+  }
+
+  // Get Organizer by Event Id
+  async findByEventId(eventId: string) {
+      
+    if(!mongoose.isValidObjectId(eventId)) {
+      throw new NotAcceptableException({ success: false, error: "Event Id is invalid."})
+    }
+
+    const organizers = await this.organizerModel.find({ eventId: eventId }).populate(['userId','eventId']).exec();
+
+    if(!organizers) {
+      throw new NotFoundException({ success: false, error: "Organizer not found."})
+    }
+
+    return { success: true, message: organizers }
   }
 
   // Create Organizer
