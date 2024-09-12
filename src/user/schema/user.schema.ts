@@ -43,6 +43,14 @@ export class User extends Document {
   @ApiProperty({ description: 'Hashed password. We do not store the real password.' })
   @Prop()
   hashedPassword: string;
+
+  @ApiProperty({ description: 'Delete Status' })
+  @Prop({ default: false })
+  isDeleted: boolean;
+
+  @ApiProperty({ description: 'Deleted At' })
+  @Prop()
+  deletedAt: Date;
   
 }
 
