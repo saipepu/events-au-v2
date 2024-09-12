@@ -7,7 +7,7 @@ export class SignInDto {
   @IsString()
   readonly password: string
 
-  @ApiProperty({ example: 'email', description: 'Email' })
+  @ApiProperty({ example: 'Doe@gmail.com', description: 'Email' })
   @IsNotEmpty()
   @IsEmail({}, { message: 'Please enter correct email.'})
   readonly email: string

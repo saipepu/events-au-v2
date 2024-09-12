@@ -7,7 +7,7 @@ export class SignUpDto {
   @IsString()
   readonly firstName: string
 
-  @ApiProperty({ example: 'Doe', description: 'Last Name' })
+  @ApiProperty({ example: 'Doe@gmail.com', description: 'Last Name' })
   @IsNotEmpty()
   @IsEmail({}, { message: 'Please enter correct email.'})
   readonly email: string
