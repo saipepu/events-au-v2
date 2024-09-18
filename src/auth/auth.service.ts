@@ -32,7 +32,7 @@ export class AuthService {
     private unitService: UnitService
   ) {}
 
-  async signUp({ isAdmin, body } : { isAdmin: boolean, body: SignUpDto }): Promise<SignUpResponse> {
+  async signUp({ isAdmin, body } : { isAdmin: boolean, body: SignUpDto }): Promise<any> {
 
     // Check if user already exist
     const user = await this.userModel.findOne({ email: body.email })
@@ -73,6 +73,9 @@ export class AuthService {
 
       await this.unitMemberService.create({ userId: res._id, unitId: body.unitId })
 
+      const token = this.jwtService.sign({ id: user._id })
+      return { success: true, message: { token, user } }
+
       return { success: true, message: res }
 
     } catch(err) {
@@ -93,7 +96,6 @@ export class AuthService {
     try {
 
       const isMatch = await bcrypt.compare(body.password, user.hashedPassword)
-      console.log(isMatch)
 
       if(!isMatch) {
         throw new BadRequestException('Invalid password.')
