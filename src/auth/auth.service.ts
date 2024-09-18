@@ -73,10 +73,8 @@ export class AuthService {
 
       await this.unitMemberService.create({ userId: res._id, unitId: body.unitId })
 
-      const token = this.jwtService.sign({ id: user._id })
-      return { success: true, message: { token, user } }
-
-      return { success: true, message: res }
+      const token = this.jwtService.sign({ id: res._id })
+      return { success: true, message: { token, user: res } }
 
     } catch(err) {
 

@@ -43,7 +43,7 @@ export class AuthController {
   // Sign in user
   @Post('/signin')
   @ApiOperation({ summary: 'Sign in user.' })
-  @ApiResponse({ status: 200, description: 'User signed in successfully.', schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'object', properties: { token: { type: 'string' } } } } }})
+  @ApiResponse({ status: 200, description: 'User signed in successfully.', schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'object', properties: { token: { type: 'string' }, user: { $ref: getSchemaPath(User) } } } } }})
   async signIn(
     @Body()
     body: SignInDto
