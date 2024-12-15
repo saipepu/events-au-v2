@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { EventService } from './event.service';
 import { Event } from './schema/event.schema';
 import { Query as QueryExpress } from 'express-serve-static-core'
@@ -41,8 +41,26 @@ export class EventController {
   @ApiResponse({ status: 200, description: 'Event found', schema: resGetByIdDto })
   async findById(
     @Param('id')
-    id: string
+    id: string,
+    @Req() req: any,
+    @Res() res: any
   ) {
+    const userAgent = req.headers['user-agent'] || '';
+    const isIOS = userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iPod') || userAgent.includes('Macintosh') || userAgent.includes('Mac OS X');
+    const appStoreLink = "https://apps.apple.com/us/app/avents/id6661019708"
+    const universalLink = `https://events-au-v2.vercel.app/event/${id}`
+    // console.log('isIOS', isIOS)
+    // if (isIOS) {
+    //   // res.redirect(appStoreLink)
+    //   res.send(`<html>
+    //     <head>
+    //         <meta http-equiv="refresh" content="0;url=${universalLink}" />
+    //     </head>
+    //     <body>
+    //         <a href="${universalLink}">Open in App</a>
+    //     </body>
+    // </html>`);
+    // }
     return this.eventService.findById(id)
   }
 
