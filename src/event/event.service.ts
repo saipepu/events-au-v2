@@ -59,10 +59,10 @@ export class EventService {
     const event = await this.eventModel.findById(id);
 
     if (!event) {
-      throw new NotFoundException('Event not found.');
+      throw new NotFoundException({ success: false, error: 'Event not found.' });
     }
 
-    return event;
+    return { success: true, message: event };
   }
 
   // create new event

@@ -59,6 +59,7 @@ export class EventController {
     //     </body>
     // </html>`);
     // }
+    console.log('id', id)
     return this.eventService.findById(id)
   }
 
