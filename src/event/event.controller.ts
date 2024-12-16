@@ -45,10 +45,10 @@ export class EventController {
     @Req() req: any,
     @Res() res: any
   ) {
-    const userAgent = req.headers['user-agent'] || '';
-    const isIOS = userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iPod') || userAgent.includes('Macintosh') || userAgent.includes('Mac OS X');
-    const appStoreLink = "https://apps.apple.com/us/app/avents/id6661019708"
-    const universalLink = `https://events-au-v2.vercel.app/event/${id}`
+    // const userAgent = req.headers['user-agent'] || '';
+    // const isIOS = userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iPod') || userAgent.includes('Macintosh') || userAgent.includes('Mac OS X');
+    // const appStoreLink = "https://apps.apple.com/us/app/avents/id6661019708"
+    // const universalLink = `https://events-au-v2.vercel.app/event/${id}`
     // console.log('isIOS', isIOS)
     // if (isIOS) {
     //   // res.redirect(appStoreLink)
