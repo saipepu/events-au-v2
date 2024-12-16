@@ -6,7 +6,7 @@
         "appIDs": ["A89P8LLWX2.com.austinxu.eventau"],
         "paths": [
           {
-            "path": "/event/*",
+            "path": "/event",
             "default": "https://apps.apple.com/us/app/avents/id6661019708"
           }
         ]
