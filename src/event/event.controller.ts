@@ -42,8 +42,6 @@ export class EventController {
   async findById(
     @Param('id')
     id: string,
-    @Req() req: any,
-    @Res() res: any
   ) {
     // const userAgent = req.headers['user-agent'] || '';
     // const isIOS = userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iPod') || userAgent.includes('Macintosh') || userAgent.includes('Mac OS X');
