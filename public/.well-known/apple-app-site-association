@@ -4,7 +4,12 @@
     "details": [
       {
         "appIDs": ["A89P8LLWX2.com.austinxu.eventau"],
-        "paths": ["/event/*"]
+        "paths": [
+          {
+            "path": "/event/*",
+            "default": "https://apps.apple.com/us/app/avents/id6661019708"
+          }
+        ]
       }
     ]
   }

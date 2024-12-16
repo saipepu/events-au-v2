@@ -98,7 +98,6 @@ import { PollResultModule } from './poll-result/poll-result.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       exclude: ['/api*'],
-      serveRoot: '/'
     }),
     PollModule,
     PollResultModule
