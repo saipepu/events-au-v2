@@ -40,7 +40,7 @@ import { PollResultModule } from './poll-result/poll-result.module';
       envFilePath: '.env',
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.DB_URI),
+    MongooseModule.forRoot(process.env.DR_URI_DEV),
     MongooseModule.forFeature([
       { name: 'RestrictedToken', schema: RestrictedTokenSchema },
       { name: 'Organizer', schema: OrganizerSchema },
