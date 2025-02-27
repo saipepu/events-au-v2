@@ -16,7 +16,7 @@ export class UpdateUserDto {
   @ApiProperty({ example: "User Phone", description: "Phone Number of the user" })
   @IsString()
   @IsOptional()
-  readonly phone: string;
+  readonly phone: number;
 
   @ApiProperty({ example: "testing@gmail.com", description: "Email of the user" })
   @IsString()
