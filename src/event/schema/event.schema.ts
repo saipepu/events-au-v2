@@ -57,7 +57,7 @@ export class Event extends Document {
   adminId: string;
 
   @ApiProperty({ example: `${Object.values(Status).join(' | ')}`, description: "Status of the event" })
-  @Prop({ default: "pending" })
+  @Prop({ default: Status.APPROVED })
   status: Status;
 
 }
