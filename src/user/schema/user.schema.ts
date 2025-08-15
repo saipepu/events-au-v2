@@ -6,7 +6,14 @@ export enum Gender {
   MALE = 'Male',
   FEMALE = 'Female',
   Other = 'Other'
-} 
+}
+
+export enum UserAuthLevel {
+  UNVERIFIED = 'unverified',
+  NEW = 'new',
+  BASIC = 'basic',
+  ADMIN = 'admin'
+}
 
 @Schema({
   timestamps: true
@@ -26,23 +33,23 @@ export class User extends Document {
 
   @ApiProperty({ example: 'male', description: 'Gender' })
   @Prop()
-  gender: Gender;
+  gender?: Gender;
 
   @ApiProperty({ example: 25, description: 'Age' })
   @Prop()
-  age: number;
+  age?: number;
 
   @ApiProperty({ example: 1234567890, description: 'Phone Number' })
   @Prop()
-  phone: number;
+  phone?: number;
 
   @ApiProperty({ example: 'false', description: 'Is Admin Boolean Value'})
   @Prop()
-  isAdmin: boolean;
+  isAdmin?: boolean;
 
   @ApiProperty({ description: 'Hashed password. We do not store the real password.' })
-  @Prop()
-  hashedPassword: string;
+  @Prop({ type: String })
+  hashedPassword?: string;
 
   @ApiProperty({ description: 'Delete Status' })
   @Prop({ default: false })
@@ -51,7 +58,30 @@ export class User extends Document {
   @ApiProperty({ description: 'Deleted At' })
   @Prop()
   deletedAt: Date;
-  
+
+  @ApiProperty({ description: 'OAuth providers' })
+  @Prop({ type: [Object], default: [] })
+  providers: {
+    provider: string;
+    providerId: string;
+  }[];
+
+  // picture
+  @ApiProperty({ description: 'Profile picture URL' })
+  @Prop()
+  picture: string;
+
+  @Prop({ type: String, default: UserAuthLevel.UNVERIFIED })
+  authLevel: UserAuthLevel;
+
+  @Prop({ type: {
+    code: String,
+    expiration: Date
+  }, default: null })
+  otp: {
+    code: string;
+    expiration: Date;
+  };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
