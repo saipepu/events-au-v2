@@ -9,7 +9,7 @@ import { CreateParticipantDto } from 'src/participant/dto/create-participant.dto
 import { AuthGuard } from '@nestjs/passport';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { EventService } from 'src/event/event.service';
-import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PollService } from 'src/poll/poll.service';
 import { CreatePollDto } from 'src/poll/dto/create-poll.dto';
@@ -17,9 +17,10 @@ import { create } from 'domain';
 import { DeletePollDto } from 'src/poll/dto/delete-poll.dts';
 import { CreatePollResultDto } from 'src/poll-result/dto/create-poll-result.dto';
 import { PollResultService } from 'src/poll-result/poll-result.service';
+import { FindAllUserQueryDto } from './dto/find-all-user-query.dto';
 
 @ApiTags('user')
-@ApiExtraModels(User, CreateEventDto, CreateParticipantDto, UpdateUserDto)
+@ApiExtraModels(User, CreateEventDto, CreateParticipantDto, UpdateUserDto, FindAllUserQueryDto)
 @Controller('')
 export class UserController {
   constructor(
@@ -34,6 +35,7 @@ export class UserController {
   @Get('users')
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'Users found (can be empty)', schema: resGetAllDto })
+  @ApiQuery({ name: 'email', required: false, description: 'Filter by email', type: String })
   async findAll(
     @Query()
     query: QueryExpress
@@ -173,19 +175,15 @@ export class UserController {
     return this.userService.recover(id);
   }
 
+  @Delete('user/delete/:id')
+  @ApiOperation({ summary: 'Delete user' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  async delete(
+    @Param('id')
+    id: string
+  ) {
+    console.log('Deleting user:', id);
+    return this.userService.delete(id);
+  }
+
 }
-
-
-
-  // Let user join new Unit
-  // @Post('user/join/unit/:id')
-  // @UseGuards(AuthGuard())
-  // @ApiBearerAuth('bearer-token')
-  // @ApiResponse({ status: 200, description: 'User joined unit', schema: resJoinUnitDto })
-  // async joinUnit(
-  //   @Param('id')
-  //   unitId: string,
-  //   @Req() req
-  // ) {
-  //   return this.userService.joinUnit(unitId, req.user)
-  // }
