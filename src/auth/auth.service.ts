@@ -1,127 +1,259 @@
-import { UnitService } from 'src/unit/unit.service';
-import { AdminService } from './../admin/admin.service';
-import { BadGatewayException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from 'src/user/schema/user.schema';
-import { SignUpDto } from './dto/signUp.dto';
+import { OAuth2Client } from 'google-auth-library';
+import * as jwt from 'jsonwebtoken';
+import { UserService } from 'src/user/user.service';
+import { PROVIDER } from './dto/google-login.dto';
 import { SignInDto } from './dto/signIn.dto';
-import { RestrictedToken } from './schema/restrictedToken.schema';
-import { SignOutDto } from './dto/signOut.dto';
-import { Admin } from 'src/admin/schema/admin.schema';
-import { CreateAdminDto } from 'src/admin/dto/create.admin.dto';
-import { UnitMemberService } from 'src/unit-member/unit-member.service';
 import * as bcrypt from 'bcrypt';
-export interface SignUpResponse {
-  success: boolean;
-  message?: { user: User, admin: Admin } | User;
-  error?: string;
-}
+import { SignUpDto } from './dto/signUp.dto';
+import { SetUpPasswordDto } from './dto/setup-password.dto';
+import { MailService } from 'src/common/mail/mail.service';
+import { UserAuthLevel } from 'src/user/schema/user.schema';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Injectable()
 export class AuthService {
+  private googleClient: OAuth2Client;
+
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<User>,
-    @InjectModel(RestrictedToken.name)
-    private restrictedTokenModel: Model<RestrictedToken>,
-    private jwtService: JwtService,
-    private adminService: AdminService,
-    private unitMemberService: UnitMemberService,
-    private unitService: UnitService
-  ) {}
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
+  ) {
+    this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  }
 
-  async signUp({ isAdmin, body } : { isAdmin: boolean, body: SignUpDto }): Promise<any> {
-
-    // Check if user already exist
-    const user = await this.userModel.findOne({ email: body.email })
-    if(user) {
-      throw new BadRequestException({ success: false, error: 'User already exist. Please login.'})
+  async signup(dto: SignUpDto) {
+    const existingUser = await this.userService.findByEmail(dto.email);
+    if (existingUser && existingUser.authLevel !== UserAuthLevel.UNVERIFIED) {
+      throw new BadRequestException('Email already exists');
     }
 
-    if(isAdmin && body?.unitId == undefined) {
+    const otp = await this.issueOtp({ expiresIn: 5 * 60 });
+    await this.mailService.sendOTPForEmailVerification(dto.email, otp.otp, 5);
 
-      throw new BadRequestException({ success: false, error: 'Admin must belong to one unit.'})
-      
-    } else if( body?.unitId != undefined) {
-      
-      const unit = await this.unitService.findById(body?.unitId)
-      if(!unit) {
-        throw new BadGatewayException({ success: false, error: "Unit id doesn't exist."})
-      }
-
+    // register user as unverified
+    if (existingUser) {
+      existingUser.otp = {
+        code: otp.otp,
+        expiration: otp.otpExpirationTime,
+      };
+      await existingUser.save();
+    } else {
+      await this.userService.create({
+        firstName: dto.firstName,
+        email: dto.email,
+        authLevel: UserAuthLevel.UNVERIFIED,
+        otp: {
+          code: otp.otp,
+          expiration: otp.otpExpirationTime,
+        },
+      });
     }
+
+    return {
+      success: true,
+      message: {
+        message: 'OTP sent to ' + dto.email + ' successfully',
+      },
+    };
+  }
+
+  async verifyEmail(dto: VerifyEmailDto) {
+    const user = await this.userService.findByEmail(dto.email);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    if (user.otp.code !== dto.otp) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    user.otp = null;
+    user.authLevel = UserAuthLevel.NEW;
+    await user.save();
+
+    return {
+      success: true,
+      message: 'Email verified successfully',
+    };
+  }
+
+  async setUpPassword(dto: SetUpPasswordDto) {
+    const user = await this.userService.findByEmail(dto.email);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    if (user.authLevel == UserAuthLevel.UNVERIFIED) throw new UnauthorizedException('Email not verified. Sign Up with your email to verify.');
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    user.hashedPassword = hashedPassword;
+    await user.save();
+
+    return {
+      success: true,
+      message: {
+        message: 'Password set up successfully',
+        user: user,
+        tokens: await this.generateTokens(user._id, user.email),
+      },
+    };
+  }
+
+  async login(dto: SignInDto) {
+    const user = await this.userService.findByEmail(dto.email);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
     try {
+      const isMatch = await bcrypt.compare(dto.password, user.hashedPassword);
 
-      const hashedPassword = await bcrypt.hash(body.password, 10)
-
-      const res = await this.userModel.create({ ...body, hashedPassword})
-
-      if(isAdmin) {
-
-        let adminDto: CreateAdminDto = {
-          userId: res._id.toString(),
-          unitId: body?.unitId
-        }
-        const admin = await this.adminService.create(adminDto)
-
-        return { success: true, message: { user: res, admin: admin.message }}
-
+      if (!isMatch) {
+        throw new BadRequestException('Invalid password.');
       }
 
-      await this.unitMemberService.create({ userId: res._id, unitId: body.unitId })
-
-      const token = this.jwtService.sign({ id: res._id })
-      return { success: true, message: { token, user: res } }
-
-    } catch(err) {
-
-      return { success: false, error: err.errmsg ? err.errmsg : err.message }
-
+      return {
+        success: true,
+        message: {
+          tokens: await this.generateTokens(user._id, user.email),
+          user,
+        },
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response ? err.response.message : err,
+      };
     }
-
   }
 
-  async signIn(body: SignInDto) {
+  /**
+   * Validate ID token from frontend (Google / Apple)
+   */
+  async validateOAuthIdToken(provider: PROVIDER, idToken: string) {
+    let oauthUser: any;
 
-    const user = await this.userModel.findOne({ email: body.email })
-    if(!user) {
-      throw new NotFoundException({ success: false, error: 'User not found.Please signup first.'})
+    if (provider === PROVIDER.GOOGLE) {
+      oauthUser = await this.verifyGoogleIdToken(idToken);
+    } else if (provider === PROVIDER.APPLE) {
+      oauthUser = await this.verifyAppleIdToken(idToken);
+    } else {
+      throw new UnauthorizedException('Unsupported OAuth provider');
     }
 
+    return this.validateOAuthLogin(oauthUser);
+  }
+
+  /**
+   * Verify Google ID token
+   */
+  private async verifyGoogleIdToken(idToken: string) {
     try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      if (!payload) throw new UnauthorizedException('Invalid Google ID token');
+      return {
+        provider: 'google' as const,
+        providerId: payload['sub'],
+        email: payload['email'],
+        firstName: payload['given_name'],
+        lastName: payload['family_name'],
+        picture: payload['picture'],
+      };
+    } catch (error) {
+      console.error('Error verifying Google ID token:', error);
+      throw new UnauthorizedException('Invalid Google ID token');
+    }
+  }
 
-      const isMatch = await bcrypt.compare(body.password, user.hashedPassword)
+  /**
+   * Verify Apple ID token
+   */
+  private async verifyAppleIdToken(idToken: string) {
+    try {
+      const applePublicKey = process.env.APPLE_PUBLIC_KEY; // replace with your method of fetching Apple JWKS
+      const payload: any = jwt.verify(idToken, applePublicKey, {
+        algorithms: ['RS256'],
+      });
 
-      if(!isMatch) {
-        throw new BadRequestException('Invalid password.')
+      return {
+        provider: 'apple' as const,
+        providerId: payload.sub,
+        email: payload.email,
+        firstName: payload['given_name'],
+        lastName: payload['family_name'],
+        picture: null, // Apple does not provide profile pictures
+      };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid Apple ID token');
+    }
+  }
+
+  /**
+   * Find or create user, then issue JWTs
+   */
+  private async validateOAuthLogin(oauthUser: any) {
+    let user = await this.userService.findByProviderId(
+      oauthUser.provider,
+      oauthUser.providerId,
+    );
+
+    if (!user && oauthUser.email) {
+      // Check if email already exists
+      user = await this.userService.findByEmail(oauthUser.email);
+      if (user) {
+        // Link new provider
+        console.log('Linking new provider:', oauthUser.provider);
+        user = await this.userService.linkProvider(
+          user._id,
+          oauthUser.provider,
+          oauthUser.providerId,
+        );
+      } else {
+        // Create new user
+        console.log('Creating new user for OAuth login');
+        user = await this.userService.createOAuthUser(oauthUser);
       }
-      
-      const token = this.jwtService.sign({ id: user._id })
-      return { success: true, message: { token, user } }
-
-    } catch(err) {
-      return { success: false, error: err.response ? err.response.message : err }
     }
 
+    if (!user) throw new UnauthorizedException('Unable to authenticate user');
+
+    return {
+      success: true,
+      message: {
+        user: user,
+        tokens: await this.generateTokens(user._id, user.email),
+      },
+    };
   }
 
-  async signOut(req) {
+  /**
+   * Generate access & refresh tokens
+   */
+  private async generateTokens(userId: string, email: string) {
+    const payload = { sub: userId, email };
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+    });
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
+    });
 
-    const token: SignOutDto = { token: req.headers.authorization.split(' ')[1] }
-
-    try {
-      const res = this.restrictedTokenModel.create(token)
-      return { success: true, message: "Signout complete."}
-    } catch(err) {
-      return { success: false, error: err.errmsg ? err.errmsg : err.message }
-    }
+    return { accessToken, refreshToken };
   }
 
-  async protected() {
-    return "Authenticated!"
+  private async issueOtp({
+    expiresIn = 5 * 60,
+  }: {
+    expiresIn?: number;
+  }): Promise<{ otp: string; otpExpirationTime: Date }> {
+    const otp = Math.floor(1000 + Math.random() * 9000).toString(); // 4 digit OTP
+    const otpExpirationTime = new Date();
+    otpExpirationTime.setSeconds(otpExpirationTime.getSeconds() + expiresIn);
+    return { otp, otpExpirationTime };
   }
-
 }
