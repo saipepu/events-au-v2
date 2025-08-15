@@ -3,6 +3,8 @@ import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-valid
 
 export class SignUpDto {
   @ApiPropertyOptional({ example: 'John', description: 'First Name' })
+  @IsNotEmpty()
+  @IsString()
   readonly firstName?: string
 
   @ApiProperty({ example: 'Doe@gmail.com', description: 'Last Name' })

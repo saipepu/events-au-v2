@@ -34,14 +34,16 @@ export class AuthService {
       throw new BadRequestException('Email already exists');
     }
 
-    const otp = await this.issueOtp({ expiresIn: 5 * 60 });
-    await this.mailService.sendOTPForEmailVerification(dto.email, otp.otp, 5);
+    const { otp, hashedOtp, otpExpirationTime } = await this.issueOtp({
+      expiresIn: 5 * 60,
+    });
+    await this.mailService.sendOTPForEmailVerification(dto.email, otp, 5);
 
     // register user as unverified
     if (existingUser) {
       existingUser.otp = {
-        code: otp.otp,
-        expiration: otp.otpExpirationTime,
+        code: hashedOtp,
+        expiration: otpExpirationTime,
       };
       await existingUser.save();
     } else {
@@ -50,8 +52,8 @@ export class AuthService {
         email: dto.email,
         authLevel: UserAuthLevel.UNVERIFIED,
         otp: {
-          code: otp.otp,
-          expiration: otp.otpExpirationTime,
+          code: hashedOtp,
+          expiration: otpExpirationTime,
         },
       });
     }
@@ -68,7 +70,9 @@ export class AuthService {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    if (user.otp.code !== dto.otp) {
+    const isMatch = await bcrypt.compare(dto.otp, user.otp.code);
+
+    if (!isMatch) {
       throw new BadRequestException('Invalid OTP');
     }
 
@@ -86,7 +90,10 @@ export class AuthService {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    if (user.authLevel == UserAuthLevel.UNVERIFIED) throw new UnauthorizedException('Email not verified. Sign Up with your email to verify.');
+    if (user.authLevel == UserAuthLevel.UNVERIFIED)
+      throw new UnauthorizedException(
+        'Email not verified. Sign Up with your email to verify.',
+      );
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     user.hashedPassword = hashedPassword;
@@ -250,10 +257,11 @@ export class AuthService {
     expiresIn = 5 * 60,
   }: {
     expiresIn?: number;
-  }): Promise<{ otp: string; otpExpirationTime: Date }> {
+  }): Promise<{ otp: string; hashedOtp: string; otpExpirationTime: Date }> {
     const otp = Math.floor(1000 + Math.random() * 9000).toString(); // 4 digit OTP
+    const hashedOtp = await bcrypt.hash(otp, 10);
     const otpExpirationTime = new Date();
     otpExpirationTime.setSeconds(otpExpirationTime.getSeconds() + expiresIn);
-    return { otp, otpExpirationTime };
+    return { otp, hashedOtp, otpExpirationTime };
   }
 }
