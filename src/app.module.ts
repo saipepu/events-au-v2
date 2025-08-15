@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -33,6 +38,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { PollModule } from './poll/poll.module';
 import { PollResultModule } from './poll-result/poll-result.module';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './filters/exception-handler';
 
 @Module({
   imports: [
@@ -40,28 +47,28 @@ import { PollResultModule } from './poll-result/poll-result.module';
       envFilePath: '.env',
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.DR_URI_DEV),
+    MongooseModule.forRoot(process.env.DB_URI_DEV),
     MongooseModule.forFeature([
       { name: 'RestrictedToken', schema: RestrictedTokenSchema },
       { name: 'Organizer', schema: OrganizerSchema },
       { name: 'Admin', schema: AdminSchema },
       { name: 'EventUnit', schema: EventUnitSchema },
       { name: 'Unit', schema: UnitSchema },
-      { name: 'UnitAdmin', schema: UnitAdminSchema},
-      { name: 'Event', schema: EventSchema},
-      { name: 'User', schema: UserSchema }
+      { name: 'UnitAdmin', schema: UnitAdminSchema },
+      { name: 'Event', schema: EventSchema },
+      { name: 'User', schema: UserSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         return {
-          secret: config.get<string>("JWT_SECRET"),
+          secret: config.get<string>('JWT_SECRET'),
           signOptions: {
-            expiresIn: config.get<string | number>("JWT_EXPIRES"),
-          }
-        }
-      }
+            expiresIn: config.get<string | number>('JWT_EXPIRES'),
+          },
+        };
+      },
     }),
     UserModule,
     AuthModule,
@@ -100,23 +107,30 @@ import { PollResultModule } from './poll-result/poll-result.module';
       exclude: ['/api*'],
     }),
     PollModule,
-    PollResultModule
+    PollResultModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      consumer
-        .apply(ApiTokenCheckMiddleware)
-        .forRoutes({ path: '/orgg/*', method: RequestMethod.ALL })
-      consumer
-        .apply(isOrganizer)
-        .forRoutes({ path: '/org/event/:eventId/*', method: RequestMethod.ALL})
-      consumer
-        .apply(isAdmin)
-        .forRoutes({ path: '/admin/event/:eventId/*', method: RequestMethod.ALL })
+    consumer
+      .apply(ApiTokenCheckMiddleware)
+      .forRoutes({ path: '/orgg/*', method: RequestMethod.ALL });
+    consumer
+      .apply(isOrganizer)
+      .forRoutes({ path: '/org/event/:eventId/*', method: RequestMethod.ALL });
+    consumer
+      .apply(isAdmin)
+      .forRoutes({
+        path: '/admin/event/:eventId/*',
+        method: RequestMethod.ALL,
+      });
   }
 }
-
