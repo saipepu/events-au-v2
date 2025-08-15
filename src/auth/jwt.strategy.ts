@@ -19,11 +19,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload) {
     
-    const { id } = payload;
+    const { sub: id } = payload;
+    console.log(payload)
     const user = await this.userModel.findById(id);
 
     if(!user) {
-      throw new UnauthorizedException('Signin first to access this endpoint.');
+      throw new UnauthorizedException('Invalid Token');
     }
 
     return user;
