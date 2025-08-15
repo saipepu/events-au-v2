@@ -7,10 +7,33 @@ export class MailService {
   private readonly sendEmail = false;
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendRoleChangeNotification(email: string, name: string, newRole: string) {
+  async sendOTPForEmailVerification(
+    email: string,
+    otp: string,
+    expiry: number,
+  ) {
+    this.logger.debug(
+      `Preparing to send OTP for email verification to: ${email}`,
+    );
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Email Verification',
+      template: './email-verification', // The name of the template file (email-verification.hbs)
+      context: {
+        otp: otp,
+        expiry: expiry,
+      },
+    });
+  }
+
+  async sendRoleChangeNotification(
+    email: string,
+    name: string,
+    newRole: string,
+  ) {
     this.logger.debug(`Preparing to send email to: ${email} for role change.`);
-    console.log(this.sendEmail)
-    if(this.sendEmail) {
+    console.log(this.sendEmail);
+    if (this.sendEmail) {
       await this.mailerService.sendMail({
         to: email,
         subject: 'Role Change Notification',
@@ -23,9 +46,15 @@ export class MailService {
     }
   }
 
-  async sendEventCreationNotification(adminEmail: string[], eventName: string, organizerName: string) {
-    this.logger.debug(`Preparing to send email to: ${adminEmail} for event: ${eventName}`);
-    if(this.sendEmail) {
+  async sendEventCreationNotification(
+    adminEmail: string[],
+    eventName: string,
+    organizerName: string,
+  ) {
+    this.logger.debug(
+      `Preparing to send email to: ${adminEmail} for event: ${eventName}`,
+    );
+    if (this.sendEmail) {
       try {
         await this.mailerService.sendMail({
           to: adminEmail.join(', '),
@@ -43,9 +72,13 @@ export class MailService {
     }
   }
 
-  async sendEventJoinNotification(organizerEmail: string[], userEmail: string, organizerName: string) {
+  async sendEventJoinNotification(
+    organizerEmail: string[],
+    userEmail: string,
+    organizerName: string,
+  ) {
     this.logger.debug(`Preparing to send email to: ${organizerEmail}.`);
-    if(this.sendEmail) {
+    if (this.sendEmail) {
       try {
         await this.mailerService.sendMail({
           to: organizerEmail.join(', '),
@@ -59,14 +92,21 @@ export class MailService {
         });
         this.logger.debug(`Email sent to: ${organizerEmail}`);
       } catch (err) {
-        this.logger.error(`Failed to send email to: ${organizerEmail}`, err.stack);
+        this.logger.error(
+          `Failed to send email to: ${organizerEmail}`,
+          err.stack,
+        );
         throw err;
       }
     }
   }
-  async sendLeaveEventNotification(organizerEmail: string[], userEmail: string, organizerName: string) {
+  async sendLeaveEventNotification(
+    organizerEmail: string[],
+    userEmail: string,
+    organizerName: string,
+  ) {
     // this.logger.debug(`Preparing to send email to: ${organizerEmail} for event: ${eventName}`);
-    if(this.sendEmail) {
+    if (this.sendEmail) {
       try {
         console.log(organizerEmail);
         await this.mailerService.sendMail({
@@ -81,15 +121,24 @@ export class MailService {
         });
         this.logger.debug(`Email sent to: ${organizerEmail}`);
       } catch (err) {
-        this.logger.error(`Failed to send email to: ${organizerEmail}`, err.stack);
+        this.logger.error(
+          `Failed to send email to: ${organizerEmail}`,
+          err.stack,
+        );
         throw err;
       }
     }
   }
 
-  async sendEventUpdateNotification(emails: string[], eventName: string, changes: any) {
-    this.logger.debug(`Preparing to send email to: ${emails} for event: ${eventName}`);
-    if(this.sendEmail) {
+  async sendEventUpdateNotification(
+    emails: string[],
+    eventName: string,
+    changes: any,
+  ) {
+    this.logger.debug(
+      `Preparing to send email to: ${emails} for event: ${eventName}`,
+    );
+    if (this.sendEmail) {
       try {
         await this.mailerService.sendMail({
           to: emails.join(', '),
@@ -97,7 +146,7 @@ export class MailService {
           template: './event-update', // The name of the template file (event-update.hbs)
           context: {
             eventName: eventName,
-            changes: changes
+            changes: changes,
           },
         });
         this.logger.debug(`Email sent to: ${emails}`);
@@ -107,9 +156,14 @@ export class MailService {
       }
     }
   }
-  async sendParitcipantUpdateStatus(participantEmails: string[], status: string) {
-    this.logger.debug(`Preparing to send email to: ${participantEmails} for status update: ${status}`);
-    if(this.sendEmail) {
+  async sendParitcipantUpdateStatus(
+    participantEmails: string[],
+    status: string,
+  ) {
+    this.logger.debug(
+      `Preparing to send email to: ${participantEmails} for status update: ${status}`,
+    );
+    if (this.sendEmail) {
       try {
         await this.mailerService.sendMail({
           to: participantEmails.join(', '),
@@ -121,14 +175,24 @@ export class MailService {
         });
         this.logger.debug(`Email sent to: ${participantEmails}`);
       } catch (err) {
-        this.logger.error(`Failed to send email to: ${participantEmails}`, err.stack);
+        this.logger.error(
+          `Failed to send email to: ${participantEmails}`,
+          err.stack,
+        );
         throw err;
       }
     }
   }
 
-  async sendEventUnitUpdateNotification(email: string, action: string, unit: string, eventId: string) {
-    this.logger.debug(`Preparing to send email to: ${email} for action: ${action} on unit: ${unit} in event: ${eventId}`);
+  async sendEventUnitUpdateNotification(
+    email: string,
+    action: string,
+    unit: string,
+    eventId: string,
+  ) {
+    this.logger.debug(
+      `Preparing to send email to: ${email} for action: ${action} on unit: ${unit} in event: ${eventId}`,
+    );
     try {
       await this.mailerService.sendMail({
         to: email,
